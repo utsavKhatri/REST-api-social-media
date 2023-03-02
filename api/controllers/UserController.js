@@ -10,7 +10,7 @@ const bcrypt = require("bcrypt");
 module.exports = {
   login: async (req, res) => {
     try {
-      console.log(req.session);
+      // console.log(req.session);
       const { email, password } = req.body;
       console.log("====================================");
       console.log(email, password);
@@ -40,7 +40,7 @@ module.exports = {
       /* Creating a token and setting it to the session. */
       const token = createToken(user._id);
 
-      sails.log.warn(token);
+      // sails.log.warn(token);
 
       req.session.jwt = token;
 

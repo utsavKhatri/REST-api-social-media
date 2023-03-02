@@ -5,7 +5,6 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-
 module.exports = {
   home: async (req, res) => {
     try {
@@ -24,7 +23,6 @@ module.exports = {
     try {
       const { text, caption } = req.body;
       const id = req.session.user.id;
-      let postPic;
       await req.file("postpic").upload(
         {
           dirname: require("path").resolve(
@@ -41,13 +39,13 @@ module.exports = {
             return res.badRequest("No file was uploaded");
           }
           console.log("------------------", uploadedFiles[0]);
-          let postPic = require("path").basename(uploadedFiles[0].fd);
-          postPic = postPic.split("posts/")[0];
+          var postPic = require("path")
+            .basename(uploadedFiles[0].fd)
+            .split("posts/")[0];
           console.log("inside  ", postPic);
         }
       );
 
-      console.log(postPic);
       console.log(postPic, text, caption);
 
       const newPost = await Posts.create({
