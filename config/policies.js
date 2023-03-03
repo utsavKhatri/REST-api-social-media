@@ -26,4 +26,7 @@ module.exports.policies = {
   PostsController:{
     "*": "isLoggedin",
   },
+  AdminController:{
+    "*":"isAdminCheck"
+  }
 };

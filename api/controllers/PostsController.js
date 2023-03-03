@@ -9,9 +9,10 @@ module.exports = {
   home: async (req, res) => {
     try {
       const postData = await Posts.find()
-        .populate("user")
-        .sort({ createdAt: -1 })
-        .select("text image caption user");
+        .populate("postBy")
+        .populate("comments", { limit: 10, select: ["text"] })
+        .sort("createdAt DESC")
+        .select(["id", "image", "caption","postBy"]);
       res.json(postData);
     } catch (error) {
       console.log(error);
@@ -22,7 +23,9 @@ module.exports = {
   createPost: async (req, res) => {
     try {
       const { text, caption } = req.body;
-      const id = req.session.user.id;
+      const id = req.user.id;
+      console.log("asdsadasd    ", req.user);
+      let postPic;
       await req.file("postpic").upload(
         {
           dirname: require("path").resolve(
@@ -31,7 +34,7 @@ module.exports = {
           ),
           maxBytes: 10000000, // 10 MB
         },
-        (err, uploadedFiles) => {
+        async (err, uploadedFiles) => {
           if (err) {
             return res.serverError(err);
           }
@@ -39,34 +42,25 @@ module.exports = {
             return res.badRequest("No file was uploaded");
           }
           console.log("------------------", uploadedFiles[0]);
-          var postPic = require("path")
-            .basename(uploadedFiles[0].fd)
-            .split("posts/")[0];
+          postPic = require("path").basename(uploadedFiles[0].fd);
+          postPic = postPic.split("posts/")[0];
           console.log("inside  ", postPic);
+          console.log(postPic, text, caption);
+
+          const newPost = await Posts.create({
+            text: text,
+            image: postPic,
+            caption: caption,
+            postBy: req.user.id,
+          }).fetch();
+
+          return res.json({
+            newPost,
+          });
         }
       );
 
-      console.log(postPic, text, caption);
-
-      const newPost = await Posts.create({
-        text: text,
-        image: postPic,
-        caption: caption,
-        postBy: id,
-      }).fetch();
-
-      console.log("newly created post ", newPost);
-
-      // const userById = await User.findOne({ email: req.session.user.email });
-      // userById.posts = await userById.posts.push(newPost);
-      // const updateUser = await User.updateOne(
-      //   {
-      //     email: req.session.user.email,
-      //   },
-      //   userById
-      // );
-
-      res.send("successfully to create post page");
+      // res.send('successfully to create post page');
     } catch (error) {
       console.log(error);
       res.json({ message: error.message });
@@ -111,46 +105,66 @@ module.exports = {
     }
   },
 
-  likePost: async (req, res) => {
-    const { id } = req.params;
-    const userId = req.session.user.id;
+  // Like a post if not already liked
+  toggleLike: async (req, res) => {
+    const { postId } = req.params;
     try {
-      const post = await Posts.findById(id);
-      const isLiked = post.likes.findIndex((id) => id === String(userId));
-      if (isLiked === -1) {
-        post.likes.push(userId);
-      } else {
-        post.likes = post.likes.filter((id) => id !== String(userId));
-      }
-      const updatedPost = await Posts.findByIdAndUpdate(id, post, {
-        new: true,
-      });
+      const postToLike = await Posts.findOne({ id: postId });
+      console.log("---------------  ", postToLike);
+      // Add the user to the current user's following list
+      const alreadyLike = await Posts.findOne({ id: postToLike.id }).populate(
+        "like",
+        { id: req.user.id }
+      );
 
-      res.json({ data: updatedPost });
+      if (alreadyLike.like.length > 0) {
+        await Posts.removeFromCollection(postToLike.id, "like", req.user.id);
+        const updatedPost = await Posts.findOne({ id: postToLike.id }).populate(
+          "like"
+        );
+        return res.json(updatedPost);
+      }
+      await Posts.addToCollection(postToLike.id, "like", req.user.id);
+
+      // Return the updated user object
+      const updatedPost = await Posts.findOne({ id: postToLike.id }).populate(
+        "like"
+      );
+      return res.json(updatedPost);
     } catch (error) {
       console.log(error);
-      res.json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
 
+  // PostController.js
+
   commentPost: async (req, res) => {
-    const { id } = req.params;
-    const { comment } = req.body;
-    const userName = req.session.user.username;
-    console.log("this is comment ", comment);
     try {
-      const post = await Posts.findById(id);
+      const { postId } = req.params;
+      const userId = req.user.id;
+      const { text } = req.body;
 
-      post.comments.push({ comment: comment, commentBy: userName });
+      // Ensure that the post exists
+      const post = await Posts.findOne({ id: postId });
+      if (!post) {
+        return res.badRequest("Invalid post ID");
+      }
 
-      const updatedPost = await Posts.findByIdAndUpdate(id, post, {
-        new: true,
-      });
+      // Create the comment
+      const comment = await Comment.create({
+        user: userId,
+        post: postId,
+        text: text,
+      }).fetch();
 
-      res.json(updatedPost);
+      // Add the comment to the post's comments collection
+      await Posts.addToCollection(postId, "comments", comment.id);
+      const newData = await Posts.find({ id: postId }).populate("comments");
+
+      return res.json({ comment, message: "<--------*------->", newData });
     } catch (error) {
-      console.log(error);
-      res.json({ message: error.message });
+      return res.serverError(error.message);
     }
   },
 };

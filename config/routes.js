@@ -15,13 +15,14 @@ module.exports.routes = {
 "POST /logout":"UserController.logout",
 "POST /user/follow/:userid":"UserController.followUser",
 "POST /user/unfollow/:userid":"UserController.unFollowUser",
-"POST /user/posts/:id":"UserController.postsByUser",
+"GET /user/posts":"UserController.postsByUser",
 "GET /home":"PostsController.home",
 "GET /search":"PostsController.getPostsBySearch",
-"POST /like/:id":"PostsController.likePost",
-"POST /comment/:id":"PostsController.commentPost",
+"POST /like/:postId":"PostsController.toggleLike",
+"POST /comment/:postId":"PostsController.commentPost",
 "DELETE /post":"PostsController.deletePost",
-"POST /create-post":"PostsController.createPost"
+"POST /create-post":"PostsController.createPost",
+"GET /admin/dashboard":"AdminController.dashboard"
 
 
 };

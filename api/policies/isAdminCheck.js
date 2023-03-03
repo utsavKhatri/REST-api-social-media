@@ -19,8 +19,11 @@ module.exports = async (req, res, next) => {
       }
       // Add the decoded token to the request object
       req.user = decodedToken;
+      if (req.user.id.admin) {
+        return next();
+      }
+      return res.status(403).send("Forbidden");
       // Call the next middleware or route handler
-      next();
     });
   } catch (error) {
     console.log(error);

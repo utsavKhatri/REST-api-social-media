@@ -7,13 +7,9 @@
 
 module.exports = {
   attributes: {
-    text: {
-      type: "string",
-      required: true,
-    },
     image: {
       type: "string",
-      required:true
+      required: true,
     },
 
     caption: {
@@ -21,10 +17,14 @@ module.exports = {
       required: true,
     },
 
-    likes: {
-      model: "User",
+    like: {
+      collection: 'user',
     },
-    comments: { type: "json", columnType: "array", defaultsTo: [] },
+    // comments: { type: "json", columnType: "array", defaultsTo: [] },
+    comments: {
+      collection: 'comment',
+      via: 'post'
+    },
     postBy: {
       model: "User",
     },
