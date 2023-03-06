@@ -18,7 +18,8 @@
     "skipper": "^0.9.3"
   },
   "devDependencies": {
-    "eslint": "5.16.0"
+    "eslint": "5.16.0",
+    "mocha": "^10.2.0"
   },
   "scripts": {
     "start": "nodemon app.js",
