@@ -6,7 +6,12 @@
  */
 
 module.exports = {
-  /* A function that is called when the route is hit. */
+  /**
+   * Retrieves all user data from the database and returns it as a JSON object.
+   * @param {Object} req - page and pagesize
+   * @returns {Object} Returns a JSON object of user
+   * @throws {Error} Throws an error if there is any issue retrieving the data
+   */
   dashboard: async (req, res) => {
     const { page, pageSize } = req.query;
     const currentPage = parseInt(page, 10) || 1;
@@ -36,6 +41,12 @@ module.exports = {
     }
   },
 
+  /**
+   * toggle active and inactive user
+   * @param {Object} req - user id
+   * @returns {Object} Returns a JSON object of user
+   * @throws {Error} Throws an error if there is an issue retrieving the data
+   */
   toggleUserIsActive: async (req, res) => {
     const { userId } = req.params;
 
@@ -56,6 +67,12 @@ module.exports = {
     }
   },
 
+  /**
+   * Retrieves all post to specific user returns it as a JSON object.
+   * @param {Object} req - id of user
+   * @returns {Object} Returns a JSON object of post
+   * @throws {Error} Throws an error if there is an issue retrieving posts.
+   */
   postById: async (req, res) => {
     const { id } = req.params;
     try {
