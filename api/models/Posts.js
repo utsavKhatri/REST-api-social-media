@@ -20,13 +20,13 @@ module.exports = {
     like: {
       collection: 'user',
     },
-    // comments: { type: "json", columnType: "array", defaultsTo: [] },
+
     comments: {
       collection: 'comment',
       via: 'post'
     },
     postBy: {
-      model: "User",
+      model: 'User', required: true
     },
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗

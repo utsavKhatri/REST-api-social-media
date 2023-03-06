@@ -5,9 +5,25 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 const bcrypt = require("bcrypt");
-const { createToken } = require("../utils");
+const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
+const dotenv = require("dotenv");
+dotenv.config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.KEY,
+  api_secret: process.env.API_SECRET,
+});
 
 module.exports = {
+  /**
+   * Authenticates the user by email and password and returns a JWT token upon successful login.
+   * @function login
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   * @returns {object} - Response JSON object with token and user information.
+   */
   login: async (req, res) => {
     try {
       // console.log(req.session);
@@ -21,6 +37,12 @@ module.exports = {
 
       // console.log('this user that search by emai =====');
       console.log(user);
+
+      if (user.isActive === false) {
+        return res
+          .status(500)
+          .json({ message: "admin deactive your account", error: true });
+      }
       if (!user) {
         return res.json({ message: "Invalid Email", error: true });
       }
@@ -34,13 +56,12 @@ module.exports = {
       }
 
       if (user.isAdmin) {
-        const token = createToken({ id: user.id, admin: user.isAdmin });
+        const token = await sails.helpers.adminToken(user.id, user.isAdmin);
         user.token = token;
         sails.log.warn(token);
         return res.json({ message: "Admin logged in successfully", user });
       }
-      /* Creating a token and setting it to the session. */
-      const token = createToken(user.id);
+      const token = await sails.helpers.jwt(user.id);
       user.token = token;
       sails.log.warn(token);
 
@@ -51,6 +72,12 @@ module.exports = {
     }
   },
 
+  /**
+   * Handles user signup
+   * @param {Object} req - email password username profilepic
+   * @param {Object} res - created user object
+   * @returns {Object} - Returns a JSON response with the registered user data or an error message
+   */
   signup: async (req, res) => {
     try {
       console.log(req.body);
@@ -58,10 +85,7 @@ module.exports = {
       let profilePic;
       await req.file("profilePhoto").upload(
         {
-          dirname: require("path").resolve(
-            sails.config.appPath,
-            "assets/images/profile"
-          ),
+          dirname: require("path").resolve(sails.config.appPath, "assets"),
           maxBytes: 10000000, // 10 MB
         },
         async (err, uploadedFiles) => {
@@ -71,12 +95,32 @@ module.exports = {
           if (uploadedFiles.length === 0) {
             return res.badRequest("No file was uploaded");
           }
-          profilePic = require("path").basename(uploadedFiles[0].fd);
-          profilePic = profilePic.split("profile/");
-          console.log("inside  ", profilePic);
-          profilePic = profilePic[0];
 
-          console.log(username, email, password, profilePic);
+          console.log("====================================");
+          console.log(uploadedFiles[0]);
+          console.log("====================================");
+          profilePic = uploadedFiles[0].fd;
+          // profilePic = profilePic.split("profile/");
+          // console.log("inside  ", profilePic);
+          // profilePic = profilePic[0];
+          console.log("====================================");
+          console.log(profilePic);
+          console.log("====================================");
+          const result = await cloudinary.uploader.upload(profilePic);
+
+          console.log("====================================");
+          console.log(result);
+          console.log("====================================");
+
+          // Delete image from local storage
+          fs.unlink(profilePic, (err) => {
+            if (err) {
+              return console.log(err);
+            }
+            console.log("successfully deleted");
+          });
+
+          console.log(username, email, password, result.secure_url);
 
           // Check if user already exists in the database
           const existingUser = await User.findOne({ email });
@@ -92,7 +136,7 @@ module.exports = {
             username,
             email,
             password: hashedPassword,
-            profilePic,
+            profilePic: result.secure_url,
           }).fetch();
 
           return res.json({ message: "register successfully", data: newUser });
@@ -104,10 +148,16 @@ module.exports = {
     }
   },
 
-  /* This is a function that is used to get all the posts of a perticular user. */
+  /**
+   * Retrieves posts by user ID
+   * @function
+   * @async
+   * @param {Object} req - request object with authenticated user ID
+   * @param {Object} res - response object
+   * @returns {Object} - Returns a JSON response with the retrieved posts or an error message
+   */
   postsByUser: async (req, res) => {
     const { id } = req.user;
-    console.log("----------->", id);
 
     try {
       const userData = await User.findOne({ id: id }).populate("posts");
@@ -118,6 +168,14 @@ module.exports = {
     }
   },
 
+  /**
+   * Allows authenticated user to follow another user
+   * @function
+   * @async
+   * @param {Object} req - request object with authenticated user ID and user ID to follow
+   * @param {Object} res - response object
+   * @returns {Object} - Returns a JSON response with the updated user object or an error message
+   */
   followUser: async (req, res) => {
     const { userid } = req.params;
     try {
@@ -130,7 +188,24 @@ module.exports = {
       );
 
       if (alreadyFollowing.following.length > 0) {
-        return res.json({ message: "already follow" });
+        await User.removeFromCollection(
+          req.user.id,
+          "following",
+          userToFollow.id
+        );
+
+        // Add the current user to the other user's followers list
+        await User.removeFromCollection(
+          userToFollow.id,
+          "followers",
+          req.user.id
+        );
+
+        // Return the updated user object
+        const updatedUser = await User.findOne({ id: req.user.id })
+          .populate("following")
+          .populate("followers");
+        return res.json({ message: "successfully unfollow", updatedUser });
       }
       await User.addToCollection(req.user.id, "following", userToFollow.id);
 
@@ -148,46 +223,113 @@ module.exports = {
     }
   },
 
-  unFollowUser: async (req, res) => {
-    const { userid } = req.params;
+  /**
+   * A logout function that retrive user profile
+   * @param {Number} req user.id
+   * @param {Object} res userData
+   */
+  userProfile: async (req, res) => {
+    const userid = req.query.id || req.user.id;
     try {
-      const userToUnfollow = await User.findOne({ id: userid });
-      console.log("---------------  ", userToUnfollow);
-      // Add the user to the current user's following list
-      const alreadyFollowing = await User.findOne({ id: req.user.id }).populate(
-        "following",
-        { id: userToUnfollow.id }
+      const userData = await User.findOne({ id: userid })
+        .populate("posts")
+        .populate("following")
+        .populate("followers")
+        .populate("comments");
+      return res.json(userData);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: error.message });
+    }
+  },
+  updateProfile: async (req, res) => {
+    try {
+      let profilePic;
+      const id = req.user.id;
+      await req.file("profilePhoto").upload(
+        {
+          dirname: require("path").resolve(sails.config.appPath, "assets"),
+          maxBytes: 10000000, // 10 MB
+        },
+        async (err, uploadedFiles) => {
+          if (err) {
+            return res.serverError(err);
+          }
+          if (uploadedFiles.length === 0) {
+            return res.badRequest("No file was uploaded");
+          }
+
+          console.log("====================================");
+          console.log(uploadedFiles[0]);
+          console.log("====================================");
+          profilePic = uploadedFiles[0].fd;
+
+          const result = await cloudinary.uploader.upload(profilePic);
+
+          // Delete image from local storage
+          fs.unlink(profilePic, (err) => {
+            if (err) {
+              return console.log(err);
+            }
+            console.log("successfully deleted");
+          });
+          const { username, email } = req.body;
+          console.log(username, email, result.secure_url);
+
+          // Create a new user in the database
+          const updatedProfile = await User.updateOne({ id: id })
+            .set({
+              username: username,
+              email: email,
+              profilePic: result.secure_url,
+            })
+            .fetch();
+
+          return res.json({
+            message: "profile updated successfully",
+            data: updatedProfile,
+          });
+        }
       );
-
-      if (alreadyFollowing.following.length > 0) {
-        await User.removeFromCollection(
-          req.user.id,
-          "following",
-          userToUnfollow.id
-        );
-
-        // Add the current user to the other user's followers list
-        await User.removeFromCollection(
-          userToUnfollow.id,
-          "followers",
-          req.user.id
-        );
-        const updatedUser = await User.findOne({ id: req.user.id })
-          .populate("following")
-          .populate("followers");
-        return res.json(updatedUser);
-      }
-
-      return res.json({ message: "already unfollow" });
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: error.message });
     }
   },
 
+  /**
+   * A logout function that log out user
+   * @param {Number} req user.id
+   * @param {String} res text
+   */
   logout: (req, res) => {
-    req.session.destroy(() => {
-      res.json({ message: "logout successfully" });
-    });
+    try {
+      req.headers["authorization"] = null;
+      return res.json({ message: "successfully logged out" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: error.message });
+    }
+  },
+
+  /**
+   * This function is used to delete user account with all the posts and comments.
+   * @param {Number} req user.id
+   * @param {String} res text
+   */
+  deleteUser: async (req, res) => {
+    const userid = req.user.id;
+    try {
+      const deletedComment = await Comment.destroy({ user: userid });
+      const deletedPost = await Posts.destroy({ postBy: userid });
+      const deletedUser = await User.destroy({ id: userid });
+      return res.json({
+        message:
+          "You successfully delete your account with post and comments successfully.",
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: error.message });
+    }
   },
 };

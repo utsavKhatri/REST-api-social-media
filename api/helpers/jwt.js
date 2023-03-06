@@ -1,30 +1,32 @@
-const jwt = require("jsonwebtoken");
 
 // api/helpers/jwt.js
 
+const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv');
+dotenv.config();
 
 module.exports = {
+  friendlyName: 'Create token',
 
-  friendlyName: 'Create JWT',
-
-  description: 'Create a JSON Web Token with the specified payload',
+  description: 'Generate a JWT token for the specified user.',
 
   inputs: {
-    payload: {
+    id: {
       type: 'ref',
+      description: 'The user object to create a token for.',
       required: true,
-      description: 'The payload to include in the token'
     },
   },
 
   fn: async function(inputs, exits) {
-    // Create the JWT token with the payload and secret key
-    const token = await jwt.sign(inputs.payload, "utsav", { expiresIn: '24h' });
-
-    // Return the token
+    const user = inputs.id;
+    const token = jwt.sign({id: user}, process.env.SECRET, {
+      expiresIn: "2h",
+    });
     return exits.success(token);
-  }
+  },
 };
+
 
 
 

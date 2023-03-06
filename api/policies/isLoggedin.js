@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv');
+dotenv.config();
 /**
  * This is a middleware function.
  * @param {token} req
@@ -13,7 +15,7 @@ module.exports = async (req, res, next) => {
       return res.status(401).send("Unauthorized");
     }
     // Verify the token
-    jwt.verify(token, "utsav", (err, decodedToken) => {
+    jwt.verify(token, process.env.SECRET, (err, decodedToken) => {
       if (err) {
         return res.status(403).send("Forbidden");
       }

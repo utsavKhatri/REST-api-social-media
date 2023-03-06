@@ -9,20 +9,23 @@
  */
 
 module.exports.routes = {
+  "GET /user/posts": "UserController.postsByUser",
+  "GET /home": "PostsController.home",
+  "GET /search": "PostsController.getPostsBySearch",
+  "GET /admin/dashboard": "AdminController.dashboard",
+  "GET /admin/users/posts/:id": "AdminController.postById",
+  "GET /like/:postId": "PostsController.toggleLike",
+  "GET /profile": "UserController.userProfile",
 
-"POST /login":"UserController.login",
-"POST /signup":"UserController.signup",
-"POST /logout":"UserController.logout",
-"POST /user/follow/:userid":"UserController.followUser",
-"POST /user/unfollow/:userid":"UserController.unFollowUser",
-"GET /user/posts":"UserController.postsByUser",
-"GET /home":"PostsController.home",
-"GET /search":"PostsController.getPostsBySearch",
-"POST /like/:postId":"PostsController.toggleLike",
-"POST /comment/:postId":"PostsController.commentPost",
-"DELETE /post":"PostsController.deletePost",
-"POST /create-post":"PostsController.createPost",
-"GET /admin/dashboard":"AdminController.dashboard"
+  "POST /login": "UserController.login",
+  "POST /signup": "UserController.signup",
+  "POST /logout": "UserController.logout",
+  "POST /user/follow/:userid": "UserController.followUser",
+  "POST /comment/:postId": "PostsController.commentPost",
+  "POST /profile": "UserController.updateProfile",
+  "POST /create-post": "PostsController.createPost",
+  "POST /admin/toggleUser/:userId": "AdminController.toggleUserIsActive",
 
-
+  "DELETE /post/:id": "PostsController.deletePost",
+  "DELETE /delete-account": "UserController.deleteUser",
 };
