@@ -29,7 +29,7 @@ module.exports = {
       // console.log(req.session);
       const { email, password } = req.body;
       if (!email || !password) {
-        return res.status(400).json({ message: "Invalid Input", error: true });
+        return res.status(400).json({ message: "Invalid Input" });
       }
 
       // Check if user exists in the database
@@ -41,10 +41,10 @@ module.exports = {
       if (user.isActive === false) {
         return res
           .status(500)
-          .json({ message: "admin deactive your account", error: true });
+          .json({ message: "admin deactive your account"});
       }
       if (!user) {
-        return res.json({ message: "Invalid Email", error: true });
+        return res.json({ message: "Invalid Email"});
       }
 
       // Check if the password is correct
@@ -52,7 +52,7 @@ module.exports = {
       if (!passwordMatches) {
         return res
           .status(400)
-          .json({ message: "Invalid Password", error: true });
+          .json({ message: "Invalid Password" });
       }
 
       if (user.isAdmin) {
@@ -83,6 +83,10 @@ module.exports = {
       console.log(req.body);
       const { username, email, password } = req.body;
       let profilePic;
+      if (!username || !email || !password) {
+        return res.status(500).json({ message: "enter something in caption" });
+      }
+
       await req.file("profilePhoto").upload(
         {
           dirname: require("path").resolve(sails.config.appPath, "assets"),
@@ -246,6 +250,13 @@ module.exports = {
     try {
       let profilePic;
       const id = req.user.id;
+
+      if (!req.body) {
+        return res
+          .status(500)
+          .json({ message: "enter something in given fields" });
+      }
+
       await req.file("profilePhoto").upload(
         {
           dirname: require("path").resolve(sails.config.appPath, "assets"),

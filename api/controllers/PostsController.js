@@ -52,6 +52,9 @@ module.exports = {
       const { caption } = req.body;
       const id = req.user.id;
       console.log("asdsadasd    ", req.user);
+      if (!caption) {
+        return res.status(500).json({message:"enter something in caption"});
+      }
       let postPic;
       await req.file("postpic").upload(
         {
