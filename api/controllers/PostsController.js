@@ -133,16 +133,18 @@ module.exports = {
     const { searchQuery } = req.query;
 
     try {
+      /* Searching for posts that contain the searchQuery in the caption. */
       const posts = await Posts.find({
         caption: { contains: searchQuery },
       }).meta({makeLikeModifierCaseInsensitive: true});
 
 
+      /* This is checking if the posts array is empty. If it is, it returns a 404 status code with a message. */
       if (posts.length<1) {
         return res.status(404).json({message:"no post contain following query"});
       }
 
-      res.json({ data: posts });
+     return res.json({ data: posts });
     } catch (error) {
       console.log(error);
       res.json({ message: error.message });

@@ -13,15 +13,52 @@
 					"name": "homepage",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/home",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"home"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "create post",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "caption",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "postpic",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:1337/create-post",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"create-post"
+							]
+						}
 					},
 					"response": []
 				},
@@ -29,15 +66,49 @@
 					"name": "like post",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/like/64057bfd790487174448e123",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"like",
+								"64057bfd790487174448e123"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "comment post",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "text",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:1337/comment/64057bfd790487174448e123",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"comment",
+								"64057bfd790487174448e123"
+							]
+						}
 					},
 					"response": []
 				},
@@ -45,15 +116,45 @@
 					"name": "search post",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/search?searchQuery=",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"search"
+							],
+							"query": [
+								{
+									"key": "searchQuery",
+									"value": ""
+								}
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "follow-unfollow user",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/user/follow/64057bd3790487174448e122",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"user",
+								"follow",
+								"64057bd3790487174448e122"
+							]
+						}
 					},
 					"response": []
 				},
@@ -61,31 +162,112 @@
 					"name": "user profile",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"profile"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "64057bd3790487174448e122",
+									"disabled": true
+								}
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "logout user",
 					"request": {
-						"method": "GET",
-						"header": []
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJpZCI6IjY0MDFlNWFjZTAzZDJiNWZlNTQxZTg4NyIsImFkbWluIjp0cnVlfSwiaWF0IjoxNjc3ODQ2NDgzLCJleHAiOjE2NzgxMDU2ODN9.6Dda9poGFEoKs0sKgGkFE60S3vD9qNKL97AQgfeCvHk",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/logout",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"logout"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "delete useraccount",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/delete-account",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"delete-account"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "update profile",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "profilePhoto",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:1337/profile",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"profile"
+							]
+						}
 					},
 					"response": []
 				}
@@ -95,7 +277,7 @@
 				"bearer": [
 					{
 						"key": "token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MDU4MGY3ZDVmNDljMjJkNTllNTk3ZSIsImlhdCI6MTY3ODA4NjcwMywiZXhwIjoxNjc4MDkzOTAzfQ.FekV5Pj-QCcYyb41fdI_MfF2enJtLJGtSUq1lfIBTzE",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MDU4MGY3ZDVmNDljMjJkNTllNTk3ZSIsImlhdCI6MTY3ODA5OTg1NiwiZXhwIjoxNjc4MTA3MDU2fQ.n_UwvsO1uvjliS1fBqccDQ3Qa5Z8kP0bGGCVXcATpog",
 						"type": "string"
 					}
 				]
@@ -127,16 +309,78 @@
 				{
 					"name": "signup",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "profilePhoto",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:1337/signup",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"signup"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "login",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:1337/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"login"
+							]
+						}
 					},
 					"response": []
 				}
@@ -149,15 +393,40 @@
 					"name": "dashboard",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/admin/dashboard",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"admin",
+								"dashboard"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "toggle user active",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/admin/toggleUser/64057bd3790487174448e122",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"admin",
+								"toggleUser",
+								"64057bd3790487174448e122"
+							]
+						}
 					},
 					"response": []
 				},
@@ -165,7 +434,21 @@
 					"name": "post by one user",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/admin/users/posts/64057bd3790487174448e122",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"admin",
+								"users",
+								"posts",
+								"64057bd3790487174448e122"
+							]
+						}
 					},
 					"response": []
 				}
