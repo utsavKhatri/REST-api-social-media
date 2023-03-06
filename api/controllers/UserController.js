@@ -39,20 +39,16 @@ module.exports = {
       console.log(user);
 
       if (user.isActive === false) {
-        return res
-          .status(500)
-          .json({ message: "admin deactive your account"});
+        return res.status(500).json({ message: "admin deactive your account" });
       }
       if (!user) {
-        return res.json({ message: "Invalid Email"});
+        return res.json({ message: "Invalid Email" });
       }
 
       // Check if the password is correct
       const passwordMatches = await bcrypt.compare(password, user.password);
       if (!passwordMatches) {
-        return res
-          .status(400)
-          .json({ message: "Invalid Password" });
+        return res.status(400).json({ message: "Invalid Password" });
       }
 
       if (user.isAdmin) {
@@ -84,7 +80,7 @@ module.exports = {
       const { username, email, password } = req.body;
       let profilePic;
       if (!username || !email || !password) {
-        return res.status(500).json({ message: "enter something in caption" });
+        return res.status(500).json({ message: "enter something in input" });
       }
 
       await req.file("profilePhoto").upload(
@@ -99,22 +95,14 @@ module.exports = {
           if (uploadedFiles.length === 0) {
             return res.badRequest("No file was uploaded");
           }
-
-          console.log("====================================");
-          console.log(uploadedFiles[0]);
-          console.log("====================================");
           profilePic = uploadedFiles[0].fd;
-          // profilePic = profilePic.split("profile/");
-          // console.log("inside  ", profilePic);
-          // profilePic = profilePic[0];
           console.log("====================================");
           console.log(profilePic);
-          console.log("====================================");
           const result = await cloudinary.uploader.upload(profilePic);
 
           console.log("====================================");
           console.log(result);
-          console.log("====================================");
+
 
           // Delete image from local storage
           fs.unlink(profilePic, (err) => {
@@ -148,7 +136,7 @@ module.exports = {
       );
     } catch (error) {
       console.error(error);
-      res.json({ error: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
 

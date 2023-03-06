@@ -135,7 +135,8 @@ module.exports = {
     try {
       const posts = await Posts.find({
         caption: { contains: searchQuery },
-      });
+      }).meta({makeLikeModifierCaseInsensitive: true});
+
 
       if (posts.length<1) {
         return res.status(404).json({message:"no post contain following query"});
