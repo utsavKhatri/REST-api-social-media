@@ -7,13 +7,13 @@
 
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 dotenv.config();
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.KEY,
-  api_secret: process.env.API_SECRET
+  api_secret: process.env.API_SECRET,
 });
 
 module.exports = {
@@ -35,7 +35,7 @@ module.exports = {
       res.json(postData);
     } catch (error) {
       console.error(error);
-    res.serverError({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
   /**
@@ -53,15 +53,12 @@ module.exports = {
       const id = req.user.id;
       console.log("asdsadasd    ", req.user);
       if (!caption) {
-        return res.status(500).json({message:"enter something in caption"});
+        return res.status(500).json({ message: "enter something in caption" });
       }
       let postPic;
       await req.file("postpic").upload(
         {
-          dirname: require("path").resolve(
-            sails.config.appPath,
-            "assets"
-          ),
+          dirname: require("path").resolve(sails.config.appPath, "assets"),
           maxBytes: 10000000, // 10 MB
         },
         async (err, uploadedFiles) => {
@@ -98,7 +95,7 @@ module.exports = {
       // res.send('successfully to create post page');
     } catch (error) {
       console.log(error);
-      res.json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
 
@@ -117,7 +114,7 @@ module.exports = {
       res.json(userByPost);
     } catch (error) {
       console.log(error);
-      res.json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
 
@@ -136,18 +133,19 @@ module.exports = {
       /* Searching for posts that contain the searchQuery in the caption. */
       const posts = await Posts.find({
         caption: { contains: searchQuery },
-      }).meta({makeLikeModifierCaseInsensitive: true});
-
+      }).meta({ makeLikeModifierCaseInsensitive: true });
 
       /* This is checking if the posts array is empty. If it is, it returns a 404 status code with a message. */
-      if (posts.length<1) {
-        return res.status(404).json({message:"no post contain following query"});
+      if (posts.length < 1) {
+        return res
+          .status(404)
+          .json({ message: "no post contain following query" });
       }
 
-     return res.json({ data: posts });
+      return res.json({ data: posts });
     } catch (error) {
       console.log(error);
-      res.json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
 
@@ -175,7 +173,7 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
-      res.json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   },
 
@@ -252,7 +250,7 @@ module.exports = {
 
       return res.json({ commentedData: newData });
     } catch (error) {
-      return res.serverError(error.message);
+      res.status(500).json({ message: error.message });
     }
   },
 };

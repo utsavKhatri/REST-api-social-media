@@ -7,6 +7,7 @@
   "dependencies": {
     "@sailshq/lodash": "^3.10.3",
     "bcrypt": "^5.1.0",
+    "chai": "^4.3.7",
     "cloudinary": "^1.35.0",
     "dotenv": "^16.0.3",
     "jsonwebtoken": "^9.0.0",
@@ -15,7 +16,8 @@
     "sails-hook-orm": "^4.0.0",
     "sails-hook-sockets": "^2.0.0",
     "sails-mongo": "^2.0.0",
-    "skipper": "^0.9.3"
+    "skipper": "^0.9.3",
+    "supertest": "^6.3.3"
   },
   "devDependencies": {
     "eslint": "5.16.0",
@@ -23,7 +25,7 @@
   },
   "scripts": {
     "start": "nodemon app.js",
-    "test": "npm run lint && npm run custom-tests && echo 'Done.'",
+    "test": "node ./node_modules/mocha/bin/mocha test/lifecycle.test.js test/integration/**/*.test.js",
     "lint": "./node_modules/eslint/bin/eslint.js . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'",
     "custom-tests": "echo \"(No other custom tests yet.)\" && echo"
   },

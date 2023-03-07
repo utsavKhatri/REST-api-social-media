@@ -38,6 +38,7 @@ module.exports = {
       });
     } catch (error) {
       console.log(error.message);
+      res.status(500).json({ message: error.message });
     }
   },
 
@@ -63,7 +64,8 @@ module.exports = {
 
       return res.status(200).json({ message: "ok", data: updatedUser });
     } catch (err) {
-      return res.status(500).send("Internal Server Error");
+      console.log(err.message);
+      res.status(500).json({ message: err.message });
     }
   },
 
@@ -82,7 +84,8 @@ module.exports = {
       }
       return res.json(post);
     } catch (err) {
-      return res.status(500).send(err.message);
+      console.log(err.message);
+      res.status(500).json({ message: err.message });
     }
   },
 };

@@ -36,13 +36,13 @@ module.exports = {
       const user = await User.findOne({ email });
 
       // console.log('this user that search by emai =====');
-      console.log(user);
+      // console.log(user);
 
       if (user.isActive === false) {
         return res.status(500).json({ message: "admin deactive your account" });
       }
       if (!user) {
-        return res.json({ message: "Invalid Email" });
+        return res.status(501).json({ message: "Invalid Email" });
       }
 
       // Check if the password is correct
@@ -54,12 +54,13 @@ module.exports = {
       if (user.isAdmin) {
         const token = await sails.helpers.adminToken(user.id, user.isAdmin);
         user.token = token;
-        sails.log.warn(token);
+        // sails.log.warn(token);
         return res.json({ message: "Admin logged in successfully", user });
       }
       const token = await sails.helpers.jwt(user.id);
       user.token = token;
-      sails.log.warn(token);
+      console.log(user);
+      // sails.log.warn(token);
 
       return res.json({ message: "successfully logged in", user });
     } catch (error) {
@@ -157,6 +158,7 @@ module.exports = {
       return res.json(userData);
     } catch (error) {
       console.log(error.message);
+      res.status(500).json({ message: error.message });
     }
   },
 
