@@ -100,24 +100,6 @@ module.exports = {
     }
   },
 
-  /**
-   * Retrieves a user associated with a specific post and returns the post with the user information as a JSON object.
-   * @param {Object} req - Express request object.
-   * @param {Object} res - Express response object.
-   * @param {string} req.params.id - The ID of the post to retrieve the associated user for.
-   * @returns {Object} Returns a JSON object containing the post with the associated user information.
-   * @throws {Error} Throws an error if there is an issue retrieving the post or associated user.
-   */
-  userByPost: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const userByPost = await Posts.findById(id).populate("user");
-      res.json(userByPost);
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: error.message });
-    }
-  },
 
   /**
    * Retrieves posts based on a search query and returns them as a JSON object.
