@@ -70,7 +70,7 @@ module.exports = {
           }
           console.log("------------------", uploadedFiles[0]);
           postPic = uploadedFiles[0].fd;
-          const result = await cloudinary.uploader.upload(postPic);
+          const result = await cloudinary.uploader.upload(postPic, { unique_filename: true });
 
           // Delete image from local storage
           fs.unlink(postPic, (err) => {

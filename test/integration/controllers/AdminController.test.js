@@ -3,10 +3,12 @@ const chai = require("chai");
 const expect = chai.expect;
 
 describe("AdminController", () => {
+
   before(() => {
     //silence the console
     console.log = function () {};
   });
+
   var token; // this will store the JWT token
   before((done) => {
     request(sails.hooks.http.app)
@@ -21,6 +23,7 @@ describe("AdminController", () => {
         done();
       });
   });
+
   describe("GET /admin/dashboard", () => {
     it("Display all user and user's post", (done) => {
       request(sails.hooks.http.app)
@@ -29,6 +32,7 @@ describe("AdminController", () => {
         .expect(200, done);
     });
   });
+
   describe("GET /admin/users/posts/:id", () => {
     let userId;
     before((done) => {
@@ -64,6 +68,7 @@ describe("AdminController", () => {
         .expect(200, done);
     });
   });
+
   describe("POST /admin/toggleUser/:userId", () => {
     it("should return 404 if user not found", (done) => {
       request(sails.hooks.http.app)
@@ -85,4 +90,5 @@ describe("AdminController", () => {
         .expect(200, done);
     });
   });
+
 });

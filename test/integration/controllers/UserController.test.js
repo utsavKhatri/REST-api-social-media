@@ -187,6 +187,7 @@ describe("UserController", () => {
         });
     });
   });
+
   describe("POST /user/follow/:userid", () => {
     var testUser;
     var token;

@@ -56,6 +56,7 @@ describe("PostsController", () => {
           done();
         });
     });
+
     it("POST /create-post", (done) => {
       request(sails.hooks.http.app)
         .post("/create-post")
@@ -81,6 +82,7 @@ describe("PostsController", () => {
         .set("Authorization", `Bearer ${token}`) // set the Authorization header with the JWT token
         .expect(200, done);
     });
+
     it("GET /like/:postId, dislike the post", (done) => {
       request(sails.hooks.http.app)
         .get(`/like/${testPost.id}`)
@@ -88,6 +90,7 @@ describe("PostsController", () => {
         .set("Authorization", `Bearer ${token}`) // set the Authorization header with the JWT token
         .expect(200, done);
     });
+
     it("POST /comment/:postId, comment on the post", (done) => {
       request(sails.hooks.http.app)
         .post(`/comment/${testPost.id}`)

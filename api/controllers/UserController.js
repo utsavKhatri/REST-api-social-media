@@ -99,7 +99,7 @@ module.exports = {
           profilePic = uploadedFiles[0].fd;
           console.log("====================================");
           console.log(profilePic);
-          const result = await cloudinary.uploader.upload(profilePic);
+          const result = await cloudinary.uploader.upload(profilePic, { unique_filename: true });
 
           console.log("====================================");
           console.log(result);
@@ -269,7 +269,7 @@ module.exports = {
           console.log("====================================");
           profilePic = uploadedFiles[0].fd;
 
-          const result = await cloudinary.uploader.upload(profilePic);
+          const result = await cloudinary.uploader.upload(profilePic, { unique_filename: true });
 
           // Delete image from local storage
           fs.unlink(profilePic, (err) => {
