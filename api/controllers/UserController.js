@@ -174,6 +174,10 @@ module.exports = {
     const { userid } = req.params;
     try {
       const userToFollow = await User.findOne({ id: userid });
+
+      if (!userToFollow) {
+        return res.status(404).json({ message: "User not found" });
+      }
       console.log("---------------  ", userToFollow);
       // Add the user to the current user's following list
       const alreadyFollowing = await User.findOne({ id: req.user.id }).populate(

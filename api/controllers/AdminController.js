@@ -54,7 +54,7 @@ module.exports = {
     try {
       const user = await User.findOne({ id: userId });
       if (!user) {
-        return res.status(404).send("User not found");
+        return res.status(404).json({message:"User not found"});
       }
 
       const isActive = !user.isActive;
@@ -78,10 +78,11 @@ module.exports = {
   postById: async (req, res) => {
     const { id } = req.params;
     try {
-      const post = await Posts.find({ postBy: id }).sort("createdAt DESC");
-      if (!post) {
-        return res.status(404).send("Post not found");
+      const validUser = await User.findOne({ id });
+      if (!validUser) {
+        return res.status(404).json({message:"invalid user"});
       }
+      const post = await Posts.find({ postBy: id }).sort("createdAt DESC");
       return res.json(post);
     } catch (err) {
       console.log(err.message);

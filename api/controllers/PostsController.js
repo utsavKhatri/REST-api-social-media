@@ -89,6 +89,7 @@ module.exports = {
 
           return res.json({
             newPost,
+            message: "post created successfully",
           });
         }
       );
@@ -160,7 +161,6 @@ module.exports = {
 
   deletePost: async (req, res) => {
     const { id } = req.params;
-
     try {
       const isValidUser = await Posts.findOne({ id: id }).populate("postBy");
       if (isValidUser.postBy.id === req.user.id) {

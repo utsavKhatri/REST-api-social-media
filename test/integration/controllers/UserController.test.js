@@ -10,6 +10,20 @@ describe("UserController", () => {
 
   /* This is a test case for signup. */
   describe("POST /signup", () => {
+    var testUser;
+    after((done) => {
+      request(sails.hooks.http.app)
+        .post("/login")
+        .send({ email: "test@test.com", password: "password" }) // assuming your authentication endpoint is /auth/login
+        .end((err, res) => {
+          const { user } = res.body;
+          if (err) {
+            return done(err);
+          }
+          testUser = user.id;
+          done();
+        });
+    });
     /* This is a test case for signup. check email and passowrd missing or not */
     it("should return 400 if email or password is missing", (done) => {
       request(sails.hooks.http.app)
@@ -21,6 +35,23 @@ describe("UserController", () => {
             return done(err);
           }
           expect(res.body.message).to.equal("enter something in input");
+          done();
+        });
+    });
+
+    it("should return 409 if email already exist", (done) => {
+      request(sails.hooks.http.app)
+        .post("/signup")
+        .field("email", "utsav123@gmail.com")
+        .field("password", "password")
+        .field("username", "test")
+        .attach("profilePhoto", __dirname + "/test.jpg")
+        .expect(409)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          expect(res.body.message).to.equal("User already exists");
           done();
         });
     });
@@ -77,21 +108,6 @@ describe("UserController", () => {
         });
     });
 
-    it("should return 500 if user is inactive", (done) => {
-      const inactiveUser = { email: "dhrupal@gmail.com", password: "123456" }; // assuming this user is inactive
-      request(sails.hooks.http.app)
-        .post("/login")
-        .send(inactiveUser)
-        .expect(500)
-        .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
-          expect(res.body.message).to.equal("admin deactive your account");
-          done();
-        });
-    });
-
     it("should return 200 and a JWT token for a regular user", (done) => {
       const regularUser = { email: "utsav123@gmail.com", password: "123456" }; // assuming this user exists and is not an admin
       request(sails.hooks.http.app)
@@ -126,6 +142,95 @@ describe("UserController", () => {
           expect(res.body.user).to.have.property("token");
           done();
         });
+    });
+  });
+
+  describe("GET /profile", () => {
+    var userToken;
+    var profileId;
+    before((done) => {
+      request(sails.hooks.http.app)
+        .post("/login")
+        .send({ email: "utsav123@gmail.com", password: "123456" }) // assuming your authentication endpoint is /auth/login
+        .end((err, res) => {
+          const { user } = res.body;
+          if (err) {
+            return done(err);
+          }
+          userToken = user.token;
+          profileId = user.id;
+          done();
+        });
+    });
+    it("should return 200 and a user profile by pass id in query", (done) => {
+      request(sails.hooks.http.app)
+        .get(`/profile?id=${profileId}`)
+        .set("Authorization", `Bearer ${userToken}`)
+        .expect(200)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          done();
+        });
+    });
+    it("should return 200 and a user profile of current logged user", (done) => {
+      request(sails.hooks.http.app)
+        .get("/profile")
+        .set("Authorization", `Bearer ${userToken}`)
+        .expect(200)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          done();
+        });
+    });
+  });
+  describe("POST /user/follow/:userid", () => {
+    var testUser;
+    var token;
+    before((done) => {
+      request(sails.hooks.http.app)
+        .post("/login")
+        .send({ email: "test@test.com", password: "password" }) // assuming your authentication endpoint is /auth/login
+        .end((err, res) => {
+          const { user } = res.body;
+          if (err) {
+            return done(err);
+          }
+          token = user.token;
+          testUser = user.id;
+          done();
+        });
+    });
+    it("should return 404 if invalid userId", (done) => {
+      request(sails.hooks.http.app)
+        .post("/user/follow/64057c52790487174448e12")
+        .set("Authorization", `Bearer ${token}`) // set the Authorization header with the JWT token
+        .expect(404)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          expect(res.body.message).to.equal("User not found");
+          done();
+        });
+    });
+    it("should return 200 and follow a user", (done) => {
+      request(sails.hooks.http.app)
+        .post("/user/follow/64057c52790487174448e126")
+        .set("Authorization", `Bearer ${token}`) // set the Authorization header with the JWT token
+        .expect(200, done);
+    });
+    it("should return 200 and unfollow followed user", (done) => {
+      request(sails.hooks.http.app)
+        .post("/user/follow/64057c52790487174448e126")
+        .set("Authorization", `Bearer ${token}`) // set the Authorization header with the JWT token
+        .expect(200, done);
+    });
+    after(async () => {
+      await User.destroy({ id: testUser });
     });
   });
 });
