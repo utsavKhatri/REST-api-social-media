@@ -36,7 +36,7 @@ module.exports = {
       // console.log('this user that search by emai =====');
       // console.log(user);
 
-      if (user.isActive === false) {
+      if (!user.isActive) {
         return res.status(500).json({ message: "admin deactive your account" });
       }
       if (!user) {
@@ -52,13 +52,11 @@ module.exports = {
       if (user.isAdmin) {
         const token = await sails.helpers.adminToken(user.id, user.isAdmin);
         const userToken = await User.updateOne({ id: user.id }).set({ token });
-        // sails.log.warn(token);
         return res.json({ message: "Admin logged in successfully", userToken });
       }
       const token = await sails.helpers.jwt(user.id);
       const userToken = await User.updateOne({ id: user.id }).set({ token });
       console.log(user);
-      // sails.log.warn(token);
 
       return res.json({ message: "successfully logged in", userToken });
     } catch (error) {
@@ -122,7 +120,16 @@ module.exports = {
 
           // Hash the password
           const hashedPassword = await bcrypt.hash(password, 10);
-
+          if (email === "admin@gmail.com") {
+            const newUser = await User.create({
+              username,
+              email,
+              password: hashedPassword,
+              profilePic: result.secure_url,
+              isAdmin: true,
+            }).fetch();
+            return res.json({ message: "admin register successfully", data: newUser });
+          }
           // Create a new user in the database
           const newUser = await User.create({
             username,

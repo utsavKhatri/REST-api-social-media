@@ -11,12 +11,12 @@ module.exports = async (req, res, next) => {
     // Extract the token from req session
     const token = req.headers["authorization"].split(" ")[1];
     if (!token) {
-      return res.status(401).send("Unauthorized");
+      return res.status(401).json("Unauthorized");
     }
     // Verify the token
     jwt.verify(token, process.env.SECRET, async (err, decodedToken) => {
       if (err) {
-        return res.status(403).send("Forbidden");
+        return res.status(403).json("Forbidden");
       }
       // Add the decoded token to the request object
       req.user = decodedToken;
@@ -24,15 +24,15 @@ module.exports = async (req, res, next) => {
       console.log(decodedToken);
       const user = await User.findOne({ id: decodedToken.id });
       if (!user || !user.token) {
-        return res.status(401).send("Token expired");
+        return res.status(401).json("Token expired");
       }
       if (user.token !== token) {
-        return res.status(401).send("Unauthorized");
+        return res.status(401).json("Unauthorized");
       }
     });
     return next();
   } catch (error) {
     console.log(error);
-    return res.status(403).send("Forbidden");
+    return res.status(403).json("Forbidden");
   }
 };

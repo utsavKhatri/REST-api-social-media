@@ -4,7 +4,6 @@ var sails = require("sails");
 before(function (done) {
   // Increase the Mocha timeout so that Sails has enough time to lift, even if you have a bunch of assets.
   this.timeout(5000);
-
   sails.lift(
     {
       // Your Sails app's configuration files will be loaded automatically,
@@ -14,6 +13,15 @@ before(function (done) {
       // and disable all logs except errors and warnings:
       hooks: { grunt: false },
       log: { level: "error" },
+      // datastores: {
+      //   default: {
+      //     adapter: "sails-mongo",
+      //     url: "mongodb+srv://UtsavKhatri:03112001@cluster0.fgkbkfa.mongodb.net/test?retryWrites=true&w=majority",
+      //   },
+      // },
+      // models: {
+      //   migrate: "drop",
+      // },
     },
     (err) => {
       if (err) {
@@ -32,6 +40,10 @@ before(function (done) {
 after((done) => {
   // here you can clear fixtures, etc.
   // (e.g. you might want to destroy the records you created above)
+
+  User.destroy({
+    email: ["test@test.com", "test2@test.com", "admin@gmail.com"],
+  });
 
   sails.lower(done);
 });
