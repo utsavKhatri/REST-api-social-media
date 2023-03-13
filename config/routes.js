@@ -16,6 +16,9 @@ module.exports.routes = {
   "GET /admin/users/posts/:id": "AdminController.postById",
   "GET /like/:postId": "PostsController.toggleLike",
   "GET /profile": "UserController.userProfile",
+  "GET /profile/following":"UserController.followingList",
+  "GET /profile/followers":"UserController.followersList",
+  "GET /profile/likes":"UserController.myLikeList",
 
   "POST /login": "UserController.login",
   "POST /signup": "UserController.signup",

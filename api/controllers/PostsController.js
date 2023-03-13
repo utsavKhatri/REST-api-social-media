@@ -7,8 +7,6 @@
 
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
-const dotenv = require("dotenv");
-dotenv.config();
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -70,7 +68,9 @@ module.exports = {
           }
           console.log("------------------", uploadedFiles[0]);
           postPic = uploadedFiles[0].fd;
-          const result = await cloudinary.uploader.upload(postPic, { unique_filename: true });
+          const result = await cloudinary.uploader.upload(postPic, {
+            unique_filename: true,
+          });
 
           // Delete image from local storage
           fs.unlink(postPic, (err) => {
@@ -99,7 +99,6 @@ module.exports = {
       res.status(500).json({ message: error.message });
     }
   },
-
 
   /**
    * Retrieves posts based on a search query and returns them as a JSON object.
@@ -172,20 +171,31 @@ module.exports = {
     try {
       const postToLike = await Posts.findOne({ id: postId });
       console.log("---------------  ", postToLike);
-      // Add the user to the current user's following list
-      const alreadyLike = await Posts.findOne({ id: postToLike.id }).populate(
-        "like",
-        { id: req.user.id }
-      );
 
-      if (alreadyLike.like.length > 0) {
-        await Posts.removeFromCollection(postToLike.id, "like", req.user.id);
+      if (!postToLike) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      // Add the user to the current user's following list
+      const likeId = await Like.findOne({ user: req.user.id });
+      const alreadyLike = await Like.findOne({
+        user: req.user.id,
+        post: postId,
+      });
+      if (alreadyLike) {
+        console.log("----%%---------> ", postId, likeId.id);
+        await Like.destroy({ id: likeId.id });
+        console.log("before--->");
         const updatedPost = await Posts.findOne({ id: postToLike.id }).populate(
           "like"
         );
+        console.log("updatedPost--->", updatedPost);
         return res.json(updatedPost);
       }
-      await Posts.addToCollection(postToLike.id, "like", req.user.id);
+      const likePost = await Like.create({
+        user: req.user.id,
+        post: postId,
+      }).fetch();
+      await Posts.addToCollection(postToLike.id, "like", likePost.id);
 
       // Return the updated user object
       const updatedPost = await Posts.findOne({ id: postToLike.id }).populate(

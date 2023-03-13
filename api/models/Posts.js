@@ -18,7 +18,8 @@ module.exports = {
     },
 
     like: {
-      collection: 'user',
+      collection: 'like',
+      via: 'post'
     },
 
     comments: {

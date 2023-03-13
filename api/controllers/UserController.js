@@ -7,8 +7,6 @@
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
-const dotenv = require("dotenv");
-dotenv.config();
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -53,16 +51,16 @@ module.exports = {
 
       if (user.isAdmin) {
         const token = await sails.helpers.adminToken(user.id, user.isAdmin);
-        user.token = token;
+        const userToken = await User.updateOne({ id: user.id }).set({ token });
         // sails.log.warn(token);
-        return res.json({ message: "Admin logged in successfully", user });
+        return res.json({ message: "Admin logged in successfully", userToken });
       }
       const token = await sails.helpers.jwt(user.id);
-      user.token = token;
+      const userToken = await User.updateOne({ id: user.id }).set({ token });
       console.log(user);
       // sails.log.warn(token);
 
-      return res.json({ message: "successfully logged in", user });
+      return res.json({ message: "successfully logged in", userToken });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: error.message });
@@ -99,11 +97,12 @@ module.exports = {
           profilePic = uploadedFiles[0].fd;
           console.log("====================================");
           console.log(profilePic);
-          const result = await cloudinary.uploader.upload(profilePic, { unique_filename: true });
+          const result = await cloudinary.uploader.upload(profilePic, {
+            unique_filename: true,
+          });
 
           console.log("====================================");
           console.log(result);
-
 
           // Delete image from local storage
           fs.unlink(profilePic, (err) => {
@@ -220,7 +219,74 @@ module.exports = {
       res.status(500).json({ message: error.message });
     }
   },
-
+  /**
+   * Allows user to see following list
+   * @function
+   * @async
+   * @param {Object} req - request object with authenticated user ID
+   * @param {Object} res - response object followingList
+   * @returns {Object} - Returns a JSON response with the user's following list or an error message
+   */
+  followingList: async (req, res) => {
+    const { id } = req.user;
+    try {
+      const followList = await User.findOne({ id })
+        .populate("following", { select: ["username"] })
+        .select(["username", "email"]);
+      if (followList.following.length < 1) {
+        return res.status(404).json({ message: "Following list empty" });
+      }
+      return res.status(200).json(followList);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: error.message });
+    }
+  },
+  /**
+   * Allows user to see followers list
+   * @function
+   * @async
+   * @param {Object} req - request object with authenticated user ID
+   * @param {Object} res - response object followersList
+   * @returns {Object} - Returns a JSON response with the user's follower list or an error message
+   */
+  followersList: async (req, res) => {
+    const { id } = req.user;
+    try {
+      const followerList = await User.findOne({ id })
+        .populate("followers", { select: ["username"] })
+        .select(["username", "email"]);
+      if (followerList.followers.length < 1) {
+        return res.status(404).json({ message: "Followers list empty" });
+      }
+      return res.status(200).json(followerList);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: error.message });
+    }
+  },
+  /**
+   * Allows user to see posts that user like
+   * @function
+   * @async
+   * @param {Object} req - request object with authenticated user ID
+   * @param {Object} res - response object myLikelist
+   * @returns {Object} - Returns a JSON response with posts that user like or an error message
+   */
+  myLikeList: async (req, res) => {
+    const { id } = req.user;
+    try {
+      const myLikes = await Like.find({ user: id }).populate("post");
+      if (!myLikes) {
+        return res.status(404).json({ message: "Likes list empty" });
+      }
+      const data = myLikes.map((like) => like.post);
+      return res.status(200).json(data);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: error.message });
+    }
+  },
   /**
    * A logout function that retrive user profile
    * @param {Number} req user.id
@@ -269,7 +335,9 @@ module.exports = {
           console.log("====================================");
           profilePic = uploadedFiles[0].fd;
 
-          const result = await cloudinary.uploader.upload(profilePic, { unique_filename: true });
+          const result = await cloudinary.uploader.upload(profilePic, {
+            unique_filename: true,
+          });
 
           // Delete image from local storage
           fs.unlink(profilePic, (err) => {
@@ -307,9 +375,11 @@ module.exports = {
    * @param {Number} req user.id
    * @param {String} res text
    */
-  logout: (req, res) => {
+  logout: async (req, res) => {
+    const id = req.user.id;
     try {
       req.headers["authorization"] = null;
+      await User.updateOne({ id: id }).set({ token: "" });
       return res.json({ message: "successfully logged out" });
     } catch (error) {
       console.log(error);

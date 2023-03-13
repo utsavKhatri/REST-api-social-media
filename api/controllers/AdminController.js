@@ -13,13 +13,22 @@ module.exports = {
    * @throws {Error} Throws an error if there is any issue retrieving the data
    */
   dashboard: async (req, res) => {
-    const { page, pageSize } = req.query;
+    const { page, pageSize, searchTerm } = req.query;
     const currentPage = parseInt(page, 10) || 1;
     const itemsPerPage = parseInt(pageSize, 10) || 10;
     const skip = (currentPage - 1) * itemsPerPage;
+    let searchQuery = {};
+    if (searchTerm) {
+      searchQuery = {
+        or: [
+          { username: { contains: searchTerm } },
+          { email: { contains: searchTerm } },
+        ],
+      };
+    }
 
     try {
-      const userData = await User.find()
+      const userData = await User.find(searchQuery)
         .populate("posts", { select: ["caption", "image"] })
         .select(["username", "email", "isActive"])
         .sort("createdAt DESC")
@@ -54,7 +63,7 @@ module.exports = {
     try {
       const user = await User.findOne({ id: userId });
       if (!user) {
-        return res.status(404).json({message:"User not found"});
+        return res.status(404).json({ message: "User not found" });
       }
 
       const isActive = !user.isActive;
@@ -80,7 +89,7 @@ module.exports = {
     try {
       const validUser = await User.findOne({ id });
       if (!validUser) {
-        return res.status(404).json({message:"invalid user"});
+        return res.status(404).json({ message: "invalid user" });
       }
       const post = await Posts.find({ postBy: id }).sort("createdAt DESC");
       return res.json(post);
