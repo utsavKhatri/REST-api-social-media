@@ -21,7 +21,7 @@ module.exports = async (req, res, next) => {
       // Add the decoded token to the request object
       req.user = decodedToken;
       const user = await User.findOne({ id: decodedToken.id });
-      if (!user || !user.token) {
+      if (!user || !user.token || !user.isAdmin) {
         return res.status(401).send("Token expired");
       }
       if (user.token !== token) {
