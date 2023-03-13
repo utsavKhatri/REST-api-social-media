@@ -38,13 +38,13 @@
 							"formdata": [
 								{
 									"key": "caption",
-									"value": "",
+									"value": "new post 6 by another",
 									"type": "text"
 								},
 								{
 									"key": "postpic",
 									"type": "file",
-									"src": []
+									"src": "/Users/ztlab130/Downloads/test.jpg"
 								}
 							]
 						},
@@ -68,7 +68,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/like/64057bfd790487174448e123",
+							"raw": "http://localhost:1337/like/640ecd1aa56984469e901510",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -76,7 +76,7 @@
 							"port": "1337",
 							"path": [
 								"like",
-								"64057bfd790487174448e123"
+								"640ecd1aa56984469e901510"
 							]
 						}
 					},
@@ -92,13 +92,13 @@
 							"formdata": [
 								{
 									"key": "text",
-									"value": "",
+									"value": "c2",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "http://localhost:1337/comment/64057bfd790487174448e123",
+							"raw": "http://localhost:1337/comment/640ecd1ea56984469e901511",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -106,7 +106,7 @@
 							"port": "1337",
 							"path": [
 								"comment",
-								"64057bfd790487174448e123"
+								"640ecd1ea56984469e901511"
 							]
 						}
 					},
@@ -118,7 +118,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/search?searchQuery=",
+							"raw": "http://localhost:1337/search?searchQuery=ui",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -130,7 +130,7 @@
 							"query": [
 								{
 									"key": "searchQuery",
-									"value": ""
+									"value": "ui"
 								}
 							]
 						}
@@ -143,7 +143,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/user/follow/64057bd3790487174448e122",
+							"raw": "http://localhost:1337/user/follow/640eccd1a56984469e90150e",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -152,7 +152,7 @@
 							"path": [
 								"user",
 								"follow",
-								"64057bd3790487174448e122"
+								"640eccd1a56984469e90150e"
 							]
 						}
 					},
@@ -187,16 +187,6 @@
 				{
 					"name": "logout user",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6eyJpZCI6IjY0MDFlNWFjZTAzZDJiNWZlNTQxZTg4NyIsImFkbWluIjp0cnVlfSwiaWF0IjoxNjc3ODQ2NDgzLCJleHAiOjE2NzgxMDU2ODN9.6Dda9poGFEoKs0sKgGkFE60S3vD9qNKL97AQgfeCvHk",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"url": {
@@ -270,6 +260,66 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "list of following",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/profile/following",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"profile",
+								"following"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "list of follower",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/profile/followers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"profile",
+								"followers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "like list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/profile/likes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"profile",
+								"likes"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
@@ -277,7 +327,7 @@
 				"bearer": [
 					{
 						"key": "token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MDU4MGY3ZDVmNDljMjJkNTllNTk3ZSIsImlhdCI6MTY3ODA5OTg1NiwiZXhwIjoxNjc4MTA3MDU2fQ.n_UwvsO1uvjliS1fBqccDQ3Qa5Z8kP0bGGCVXcATpog",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MGVjY2MxYTU2OTg0NDY5ZTkwMTUwZCIsImFkbWluIjp0cnVlLCJpYXQiOjE2Nzg2OTMyOTIsImV4cCI6MTY3ODcwMDQ5Mn0.vXOlKcALpI_907hpg7vof6cbuVU-5EWBd1GYZKdoOsw",
 						"type": "string"
 					}
 				]
@@ -332,7 +382,7 @@
 								{
 									"key": "profilePhoto",
 									"type": "file",
-									"src": []
+									"src": "/Users/ztlab130/untitled folder/REST api social media/test/integration/controllers/test.jpg"
 								}
 							]
 						},
@@ -360,12 +410,12 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "",
+									"value": "admin@gmail.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "",
+									"value": "admin123",
 									"type": "text"
 								}
 							]
@@ -415,7 +465,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/admin/toggleUser/64057bd3790487174448e122",
+							"raw": "http://localhost:1337/admin/toggleUser/640eccd8a56984469e90150f",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -424,7 +474,7 @@
 							"path": [
 								"admin",
 								"toggleUser",
-								"64057bd3790487174448e122"
+								"640eccd8a56984469e90150f"
 							]
 						}
 					},
@@ -458,7 +508,7 @@
 				"bearer": [
 					{
 						"key": "token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MDU3YzUyNzkwNDg3MTc0NDQ4ZTEyNiIsImFkbWluIjp0cnVlLCJpYXQiOjE2NzgwODY3MjIsImV4cCI6MTY3ODA5MzkyMn0.P8-pa0ZXiKCGBTHZcjKsI3pZDoFOJCMeny7som2_UEM",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MGVjY2MxYTU2OTg0NDY5ZTkwMTUwZCIsImFkbWluIjp0cnVlLCJpYXQiOjE2Nzg2OTMyOTIsImV4cCI6MTY3ODcwMDQ5Mn0.vXOlKcALpI_907hpg7vof6cbuVU-5EWBd1GYZKdoOsw",
 						"type": "string"
 					}
 				]
