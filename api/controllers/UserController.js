@@ -128,7 +128,10 @@ module.exports = {
               profilePic: result.secure_url,
               isAdmin: true,
             }).fetch();
-            return res.json({ message: "admin register successfully", data: newUser });
+            return res.json({
+              message: "admin register successfully",
+              data: newUser,
+            });
           }
           // Create a new user in the database
           const newUser = await User.create({
@@ -295,7 +298,7 @@ module.exports = {
     }
   },
   /**
-   * A logout function that retrive user profile
+   * get user profile
    * @param {Number} req user.id
    * @param {Object} res userData
    */
@@ -313,6 +316,13 @@ module.exports = {
       res.status(500).json({ message: error.message });
     }
   },
+      /**
+   * Allows user to update profile
+   * @function
+   * @async
+   * @param {Object} req - request object with authenticated user ID
+   * @param {Object} res - response object with updated profile
+   */
   updateProfile: async (req, res) => {
     try {
       let profilePic;
@@ -371,6 +381,33 @@ module.exports = {
           });
         }
       );
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: error.message });
+    }
+  },
+    /**
+   * Allows user change password
+   * @function
+   * @async
+   * @param {Object} req - request object with authenticated user ID
+   * @param {Object} res - response message
+   */
+  changePassword: async (req, res) => {
+    const id = req.user.id;
+    try {
+      const validUser = await User.findOne({ id });
+      if (!validUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const { oldPassword, newPassword } = req.body;
+      const isMatch = await bcrypt.compare(oldPassword, validUser.password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Incorrect password" });
+      }
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await User.updateOne({ id: id }).set({ password: hashedPassword });
+      return res.status(200).json({ message: "Password changed" });
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: error.message });

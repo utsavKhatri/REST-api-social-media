@@ -36,7 +36,6 @@ module.exports = {
         .limit(itemsPerPage);
       const totalItems = await User.count();
       const totalPages = Math.ceil(totalItems / itemsPerPage);
-      console.log(totalPages);
 
       return res.json({
         currentPage,

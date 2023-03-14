@@ -24,13 +24,26 @@ module.exports = {
    * @returns {Object} - JSON object containing post data with user and comment details
    */
   home: async (req, res) => {
+    const { page, pageSize, searchTerm } = req.query;
+    const currentPage = parseInt(page, 10) || 1;
+    const itemsPerPage = parseInt(pageSize, 10) || 10;
+    const skip = (currentPage - 1) * itemsPerPage;
+    let searchQuery = {};
+    if (searchTerm) {
+      searchQuery = {
+        caption: { contains: searchTerm },
+      };
+    }
     try {
-      const postData = await Posts.find()
+      const postData = await Posts.find(searchQuery)
         .populate("postBy")
         .populate("like")
         .populate("comments", { limit: 10, select: ["text"] })
         .sort("createdAt DESC")
-        .select(["id", "image", "caption"]);
+        .skip(skip)
+        .limit(itemsPerPage);
+      const totalItems = await User.count();
+      const totalPages = Math.ceil(totalItems / itemsPerPage);
 
       const displayData = postData.map((post) => {
         return {
@@ -44,7 +57,13 @@ module.exports = {
           }),
         };
       });
-      res.json(displayData);
+      res.json({
+        currentPage,
+        itemsPerPage,
+        totalPages,
+        totalItems,
+        displayData,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: error.message });
