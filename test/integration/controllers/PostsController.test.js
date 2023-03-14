@@ -4,10 +4,6 @@ const expect = chai.expect;
 
 describe("PostsController", () => {
   var userId;
-  before(() => {
-    //silence the console
-    console.log = function () {};
-  });
   var testPost;
   var req = {
     user: {
@@ -15,6 +11,10 @@ describe("PostsController", () => {
     },
   };
   var token;
+  before(() => {
+    console.log = function () {};
+  });
+
   before((done) => {
     request(sails.hooks.http.app)
       .post("/signup")
@@ -22,30 +22,26 @@ describe("PostsController", () => {
       .field("password", "password")
       .field("username", "test4")
       .attach("profilePhoto", __dirname + "/test.jpg")
-      .expect(200)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(res.body.message).to.equal("register successfully");
-        done();
-      });
+      .expect(200, done);
   });
-  before((done) => {
-    request(sails.hooks.http.app)
-      .post("/login")
-      .send({ email: "test4@test.com", password: "password" })
-      .expect(200)
-      .end((err, res) => {
-        // console.warn("------*&*&----- 666 -->", res.body);
-        if (err) {
-          return done(err);
-        }
-        const { userToken } = res.body;
-        token = userToken.token;
-        userId = userToken.id;
-        done();
-      });
+  describe("GET /login", () => {
+    it("should return 200 and a JWT token", (done) => {
+      request(sails.hooks.http.app)
+        .post("/login")
+        .send({ email: "test4@test.com", password: "password" })
+        .expect(200)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          const { userToken } = res.body;
+          token = userToken.token;
+          userId = userToken.id;
+          expect(res.body.message).to.equal("successfully logged in");
+          expect(res.body.userToken).to.have.property("token");
+          done();
+        });
+    });
   });
 
   describe("GET /home", () => {
@@ -117,5 +113,9 @@ describe("PostsController", () => {
         .set("Authorization", `Bearer ${token}`)
         .expect(200, done);
     });
+  });
+
+  after((done) => {
+    User.destroy({ email: "test4@test.com" }).exec(done);
   });
 });

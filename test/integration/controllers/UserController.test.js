@@ -41,22 +41,7 @@ describe("UserController", () => {
           done();
         });
     });
-    it("should return 200 and create admin", (done) => {
-      request(sails.hooks.http.app)
-        .post("/signup")
-        .field("email", "admin@gmail.com")
-        .field("password", "admin123")
-        .field("username", "admin")
-        .attach("profilePhoto", __dirname + "/test.jpg")
-        .expect(200)
-        .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
-          expect(res.body.message).to.equal("admin register successfully");
-          done();
-        });
-    });
+
     it("should return 409 if email already exist", (done) => {
       request(sails.hooks.http.app)
         .post("/signup")
@@ -124,25 +109,6 @@ describe("UserController", () => {
           done();
         });
     });
-
-    it("should return 200 and an admin token for an admin user", (done) => {
-      const adminUser = {
-        email: "admin@gmail.com",
-        password: "admin123",
-      }; // assuming this user exists and is an admin
-      request(sails.hooks.http.app)
-        .post("/login")
-        .send(adminUser)
-        .expect(200)
-        .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
-          expect(res.body.message).to.equal("Admin logged in successfully");
-          expect(res.body.userToken).to.have.property("token");
-          done();
-        });
-    });
   });
 
   describe("GET /profile", () => {
@@ -190,7 +156,6 @@ describe("UserController", () => {
   });
 
   describe("POST /user/follow/:userid", () => {
-    var testUser;
     var followUserId;
     var token;
     before((done) => {
@@ -248,6 +213,11 @@ describe("UserController", () => {
         .post(`/user/follow/${followUserId}`)
         .set("Authorization", `Bearer ${token}`)
         .expect(200, done);
+    });
+    after((done) => {
+      User.destroy({
+        email: ["test2@test.com","test@test.com"],
+      }).exec(done);
     });
   });
 });

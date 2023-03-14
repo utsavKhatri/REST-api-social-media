@@ -3,64 +3,70 @@ const chai = require("chai");
 const expect = chai.expect;
 
 describe("AdminController", () => {
-  var token;
-  var testUser;
   before(() => {
     console.log = function () {};
   });
 
-  before((done) => {
-    request(sails.hooks.http.app)
-      .post("/signup")
-      .field("email", "admin@gmail.com")
-      .field("password", "password")
-      .field("username", "admin")
-      .attach("profilePhoto", __dirname + "/test.jpg")
-      .expect(200)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(res.body.message).to.equal("admin register successfully");
-        done();
-      });
-  });
 
-  before((done) => {
-    request(sails.hooks.http.app)
-      .post("/login")
-      .send({ email: "admin@test.com", password: "password" })
-      .expect(200)
-      .end((err, res) => {
-        // console.warn("------*&*&----- 666 -->", res.body);
-        if (err) {
-          return done(err);
-        }
-        const { userToken } = res.body;
-        token = userToken.token;
-        testUser = userToken.id;
-        done();
-      });
-  });
-
+  var token;
   describe("GET /admin/dashboard", () => {
+    before((done) => {
+      const adminUser = {
+        email: "admin@gmail.com",
+        password: "admin123",
+      }; // assuming this user exists and is an admin
+      request(sails.hooks.http.app)
+        .post("/login")
+        .send(adminUser)
+        .expect(200)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          token = res.body.userToken.token;
+          expect(res.body.message).to.equal("Admin logged in successfully");
+          expect(res.body.userToken).to.have.property("token");
+          done();
+        });
+    });
     it("Display all user and user's post", (done) => {
       request(sails.hooks.http.app)
         .get("/admin/dashboard")
         .set("Authorization", `Bearer ${token}`)
         .expect(200, done);
     });
-  });
-
-  after(() => {
-    User.destroy({
-      id: testUser,
+    it("Search user by username", (done) => {
+      request(sails.hooks.http.app)
+        .get("/admin/dashboard")
+        .set("Authorization", `Bearer ${token}`)
+        .query({ searchTerm: "admin" })
+        .expect(200, done);
     });
   });
 
   describe("GET /admin/users/posts/:id", () => {
-    let userId;
+    var userId;
+    var token;
     before((done) => {
+      const adminUser = {
+        email: "admin@gmail.com",
+        password: "admin123",
+      }; // assuming this user exists and is an admin
+      request(sails.hooks.http.app)
+        .post("/login")
+        .send(adminUser)
+        .expect(200)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          token = res.body.userToken.token;
+          expect(res.body.message).to.equal("Admin logged in successfully");
+          expect(res.body.userToken).to.have.property("token");
+          done();
+        });
+    });
+    it("should create dummy account", (done) => {
       request(sails.hooks.http.app)
         .post("/signup")
         .field("email", "test3@test.com")
@@ -72,27 +78,15 @@ describe("AdminController", () => {
           if (err) {
             return done(err);
           }
-
+          userId = res.body.data.id;
           expect(res.body.message).to.equal("register successfully");
           done();
         });
     });
-    before((done) => {
-      request(sails.hooks.http.app)
-        .post("/login")
-        .send({ email: "test3@gmail.com", password: "password" })
-        .end((err, res) => {
-          const { userToken } = res.body;
-          if (err) {
-            return done(err);
-          }
-          userId = userToken.id;
-          done();
-        });
-    });
+
     it("should return 404 if send invalid id", (done) => {
       request(sails.hooks.http.app)
-        .get("/admin/users/posts/64057cds04874448e12sd")
+        .get("/admin/users/posts/64057cds04874448e12sdads")
         .set("Authorization", `Bearer ${token}`)
         .expect(404)
         .end((err, res) => {
@@ -109,46 +103,31 @@ describe("AdminController", () => {
         .set("Authorization", `Bearer ${token}`)
         .expect(200, done);
     });
-    after(async () => {
-      await User.destroy({ id: userId });
+    after((done) => {
+      User.destroy({ email: "test3@test.com" }).exec(done);
     });
   });
 
   describe("POST /admin/toggleUser/:userId", () => {
-    let userId;
+    var userId;
     before((done) => {
       request(sails.hooks.http.app)
         .post("/signup")
-        .field("email", "test4@test.com")
+        .field("email", "test6@test.com")
         .field("password", "password")
-        .field("username", "test4")
+        .field("username", "test6")
         .attach("profilePhoto", __dirname + "/test.jpg")
-        .expect(200)
         .end((err, res) => {
           if (err) {
             return done(err);
           }
-
-          expect(res.body.message).to.equal("register successfully");
-          done();
-        });
-    });
-    before((done) => {
-      request(sails.hooks.http.app)
-        .post("/login")
-        .send({ email: "test4@gmail.com", password: "password" })
-        .end((err, res) => {
-          const { userToken } = res.body;
-          if (err) {
-            return done(err);
-          }
-          userId = userToken.id;
+          userId = res.body.data.id;
           done();
         });
     });
     it("should return 404 if user not found", (done) => {
       request(sails.hooks.http.app)
-        .post("/admin/toggleUser/640eec73bfdff4548bc0cdbefgd")
+        .post("/admin/toggleUser/64048bc0cdbefgd")
         .set("Authorization", `Bearer ${token}`)
         .expect(404)
         .end((err, res) => {
@@ -165,8 +144,8 @@ describe("AdminController", () => {
         .set("Authorization", `Bearer ${token}`)
         .expect(200, done);
     });
-    after(async () => {
-      await User.destroy({ id: userId });
+    after((done) => {
+      User.destroy({ email: "test6@test.com" }).exec(done);
     });
   });
 });
