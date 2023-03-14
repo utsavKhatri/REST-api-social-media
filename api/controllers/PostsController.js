@@ -41,7 +41,10 @@ module.exports = {
         .populate("comments")
         .sort("createdAt DESC")
         .skip(skip)
-        .limit(itemsPerPage);
+        .limit(itemsPerPage)
+        .meta({
+          makeLikeModifierCaseInsensitive: true,
+        });
       const totalItems = await Posts.count();
       const totalPages = Math.ceil(totalItems / itemsPerPage);
 
