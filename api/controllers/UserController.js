@@ -18,13 +18,12 @@ module.exports = {
   /**
    * Authenticates the user by email and password and returns a JWT token upon successful login.
    * @function login
-   * @param {object} req - Express request object.
-   * @param {object} res - Express response object.
+   * @param {object} req - request object body
+   * @param {object} res - response object user with token
    * @returns {object} - Response JSON object with token and user information.
    */
   login: async (req, res) => {
     try {
-      // console.log(req.session);
       const { email, password } = req.body;
       if (!email || !password) {
         return res.status(400).json({ message: "Invalid Input" });
@@ -33,14 +32,12 @@ module.exports = {
       // Check if user exists in the database
       const user = await User.findOne({ email });
 
-      // console.log('this user that search by emai =====');
-      // console.log(user);
-
-      if (!user.isActive) {
-        return res.status(500).json({ message: "admin deactive your account" });
-      }
       if (!user) {
         return res.status(501).json({ message: "Invalid Email" });
+      }
+      // Check if user is active
+      if (!user.isActive) {
+        return res.status(500).json({ message: "admin deactive your account" });
       }
 
       // Check if the password is correct
@@ -80,10 +77,11 @@ module.exports = {
         return res.status(500).json({ message: "enter something in input" });
       }
 
+      // Uploading the image to cloudinary and create user account
       await req.file("profilePhoto").upload(
         {
           dirname: require("path").resolve(sails.config.appPath, "assets"),
-          maxBytes: 10000000, // 10 MB
+          maxBytes: 10000000,
         },
         async (err, uploadedFiles) => {
           if (err) {
@@ -120,19 +118,6 @@ module.exports = {
 
           // Hash the password
           const hashedPassword = await bcrypt.hash(password, 10);
-          if (email === "admin@gmail.com") {
-            const newUser = await User.create({
-              username,
-              email,
-              password: hashedPassword,
-              profilePic: result.secure_url,
-              isAdmin: true,
-            }).fetch();
-            return res.json({
-              message: "admin register successfully",
-              data: newUser,
-            });
-          }
           // Create a new user in the database
           const newUser = await User.create({
             username,
@@ -309,14 +294,20 @@ module.exports = {
         .populate("posts")
         .populate("following")
         .populate("followers")
-        .populate("comments");
+        .populate("comments")
+        .populate("likes");
+
+      if (!userData) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
       return res.json(userData);
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: error.message });
     }
   },
-      /**
+  /**
    * Allows user to update profile
    * @function
    * @async
@@ -366,7 +357,7 @@ module.exports = {
           const { username, email } = req.body;
           console.log(username, email, result.secure_url);
 
-          // Create a new user in the database
+          // updat user profile
           const updatedProfile = await User.updateOne({ id: id })
             .set({
               username: username,
@@ -386,7 +377,7 @@ module.exports = {
       res.status(500).json({ message: error.message });
     }
   },
-    /**
+  /**
    * Allows user change password
    * @function
    * @async
@@ -439,6 +430,7 @@ module.exports = {
   deleteUser: async (req, res) => {
     const userid = req.user.id;
     try {
+      const deleteLike = await Like.destroy({ user: userid });
       const deletedComment = await Comment.destroy({ user: userid });
       const deletedPost = await Posts.destroy({ postBy: userid });
       const deletedUser = await User.destroy({ id: userid });

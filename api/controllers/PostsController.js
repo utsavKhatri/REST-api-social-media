@@ -38,11 +38,11 @@ module.exports = {
       const postData = await Posts.find(searchQuery)
         .populate("postBy")
         .populate("like")
-        .populate("comments", { limit: 10, select: ["text"] })
+        .populate("comments")
         .sort("createdAt DESC")
         .skip(skip)
         .limit(itemsPerPage);
-      const totalItems = await User.count();
+      const totalItems = await Posts.count();
       const totalPages = Math.ceil(totalItems / itemsPerPage);
 
       const displayData = postData.map((post) => {
@@ -143,12 +143,17 @@ module.exports = {
    */
   getPostsBySearch: async (req, res) => {
     const { searchQuery } = req.query;
-
+    let searchQueryObj = {};
+    if (searchQuery) {
+      searchQueryObj = {
+        caption: { contains: searchQuery },
+      };
+    }
     try {
       /* Searching for posts that contain the searchQuery in the caption. */
-      const posts = await Posts.find({
-        caption: { contains: searchQuery },
-      }).meta({ makeLikeModifierCaseInsensitive: true });
+      const posts = await Posts.find(searchQueryObj).meta({
+        makeLikeModifierCaseInsensitive: true,
+      });
 
       /* This is checking if the posts array is empty. If it is, it returns a 404 status code with a message. */
       if (posts.length < 1) {
@@ -176,8 +181,9 @@ module.exports = {
   deletePost: async (req, res) => {
     const { id } = req.params;
     try {
-      const isValidUser = await Posts.findOne({ id: id }).populate("postBy");
+      const isValidUser = await Posts.findOne({ id: id });
       if (isValidUser.postBy.id === req.user.id) {
+        const deletedLike = await Like.destroy({ post: id });
         const deletedComment = await Comment.destroy({ post: id });
         const deletedPost = await Posts.destroy({ id: id });
         return res.json({ message: "Post deleted successfully." });

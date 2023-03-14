@@ -30,10 +30,14 @@ module.exports = {
     try {
       const userData = await User.find(searchQuery)
         .populate("posts", { select: ["caption", "image"] })
-        .select(["username", "email", "isActive"])
+        .populate("comments", { limit: 10, select: ["text"] })
+        .populate("likes")
         .sort("createdAt DESC")
         .skip(skip)
-        .limit(itemsPerPage);
+        .limit(itemsPerPage)
+        .meta({
+          makeLikeModifierCaseInsensitive: true,
+        });
       const totalItems = await User.count();
       const totalPages = Math.ceil(totalItems / itemsPerPage);
 
