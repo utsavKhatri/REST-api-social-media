@@ -27,10 +27,24 @@ module.exports = {
     try {
       const postData = await Posts.find()
         .populate("postBy")
+        .populate("like")
         .populate("comments", { limit: 10, select: ["text"] })
         .sort("createdAt DESC")
-        .select(["id", "image", "caption", "postBy"]);
-      res.json(postData);
+        .select(["id", "image", "caption"]);
+
+      const displayData = postData.map((post) => {
+        return {
+          id: post.id,
+          image: post.image,
+          caption: post.caption,
+          postBy: post.postBy.username,
+          likes: post.like.length,
+          comments: post.comments.map((c) => {
+            return c.text;
+          }),
+        };
+      });
+      res.json(displayData);
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: error.message });
@@ -176,7 +190,7 @@ module.exports = {
         return res.status(404).json({ message: "Post not found" });
       }
       // Add the user to the current user's following list
-      const likeId = await Like.findOne({ user: req.user.id });
+      const likeId = await Like.find({ user: req.user.id });
       const alreadyLike = await Like.findOne({
         user: req.user.id,
         post: postId,
