@@ -177,7 +177,7 @@ module.exports = {
     const { id } = req.params;
     try {
       const isValidUser = await Posts.findOne({ id: id });
-      if (isValidUser.postBy.id === req.user.id) {
+      if (isValidUser.postBy === req.user.id) {
         const deletedLike = await Like.destroy({ post: id });
         const deletedComment = await Comment.destroy({ post: id });
         const deletedPost = await Posts.destroy({ id: id });
