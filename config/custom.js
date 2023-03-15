@@ -7,7 +7,15 @@
  * For more information on custom configuration, visit:
  * https://sailsjs.com/config/custom
  */
+const bcrypt = require("bcrypt");
+const cloudinary = require("cloudinary").v2;
+const fs = require("fs");
 
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.KEY,
+  api_secret: process.env.API_SECRET,
+});
 module.exports.custom = {
 
   /***************************************************************************
@@ -17,4 +25,7 @@ module.exports.custom = {
   ***************************************************************************/
   // sendgridSecret: 'SG.fake.3e0Bn0qSQVnwb1E4qNPz9JZP5vLZYqjh7sn8S93oSHU',
   // stripeSecret: 'sk_test_Zzd814nldl91104qor5911gjald',
+  fs,
+  bcrypt,
+  cloudinary
 };

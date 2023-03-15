@@ -5,14 +5,6 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-const cloudinary = require("cloudinary").v2;
-const fs = require("fs");
-
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.KEY,
-  api_secret: process.env.API_SECRET,
-});
 
 module.exports = {
   /**
@@ -104,12 +96,12 @@ module.exports = {
           }
           console.log("------------------", uploadedFiles[0]);
           postPic = uploadedFiles[0].fd;
-          const result = await cloudinary.uploader.upload(postPic, {
+          const result = await sails.config.custom.cloudinary.uploader.upload(postPic, {
             unique_filename: true,
           });
 
           // Delete image from local storage
-          fs.unlink(postPic, (err) => {
+          sails.config.custom.fs.unlink(postPic, (err) => {
             if (err) {
               return console.log(err);
             }
