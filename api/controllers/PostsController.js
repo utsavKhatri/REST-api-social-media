@@ -61,7 +61,7 @@ module.exports = {
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
   /**
@@ -76,8 +76,6 @@ module.exports = {
   createPost: async (req, res) => {
     try {
       const { caption } = req.body;
-      const id = req.user.id;
-      console.log("asdsadasd    ", req.user);
       if (!caption) {
         return res.status(500).json({ message: "enter something in caption" });
       }
@@ -121,10 +119,9 @@ module.exports = {
           });
         }
       );
-      // res.send('successfully to create post page');
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -160,7 +157,7 @@ module.exports = {
       return res.json({ data: posts });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -188,7 +185,7 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -204,7 +201,6 @@ module.exports = {
     const { postId } = req.params;
     try {
       const postToLike = await Posts.findOne({ id: postId });
-      console.log("---------------  ", postToLike);
 
       if (!postToLike) {
         return res.status(404).json({ message: "Post not found" });
@@ -216,9 +212,7 @@ module.exports = {
         post: postId,
       });
       if (alreadyLike) {
-        console.log("----%%---------> ", postId, likeId.id);
         await Like.destroy({ id: likeId.id });
-        console.log("before--->");
         const updatedPost = await Posts.findOne({ id: postToLike.id }).populate(
           "like"
         );
@@ -238,7 +232,7 @@ module.exports = {
       return res.json(updatedPost);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -276,7 +270,7 @@ module.exports = {
 
       return res.json({ commentedData: newData });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 };

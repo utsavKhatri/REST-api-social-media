@@ -50,7 +50,7 @@ module.exports = {
       });
     } catch (error) {
       console.log(error.message);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -77,7 +77,7 @@ module.exports = {
       return res.status(200).json({ message: "ok", data: updatedUser });
     } catch (err) {
       console.log(err.message);
-      res.status(500).json({ message: err.message });
+      return res.status(500).json({ message: err.message });
     }
   },
 
@@ -98,7 +98,7 @@ module.exports = {
       return res.json(post);
     } catch (err) {
       console.log(err.message);
-      res.status(500).json({ message: err.message });
+      return res.status(500).json({ message: err.message });
     }
   },
 };

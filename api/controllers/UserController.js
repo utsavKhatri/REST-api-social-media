@@ -32,7 +32,10 @@ module.exports = {
       }
 
       // Check if the password is correct
-      const passwordMatches = await sails.config.custom.bcrypt.compare(password, user.password);
+      const passwordMatches = await sails.config.custom.bcrypt.compare(
+        password,
+        user.password
+      );
       if (!passwordMatches) {
         return res.status(400).json({ message: "Invalid Password" });
       }
@@ -49,7 +52,7 @@ module.exports = {
       return res.json({ message: "successfully logged in", userToken });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -82,13 +85,14 @@ module.exports = {
             return res.badRequest("No file was uploaded");
           }
           profilePic = uploadedFiles[0].fd;
-          console.log("====================================");
           console.log(profilePic);
-          const result = await sails.config.custom.cloudinary.uploader.upload(profilePic, {
-            unique_filename: true,
-          });
+          const result = await sails.config.custom.cloudinary.uploader.upload(
+            profilePic,
+            {
+              unique_filename: true,
+            }
+          );
 
-          console.log("====================================");
           console.log(result);
 
           // Delete image from local storage
@@ -108,7 +112,10 @@ module.exports = {
           }
 
           // Hash the password
-          const hashedPassword = await sails.config.custom.bcrypt.hash(password, 10);
+          const hashedPassword = await sails.config.custom.bcrypt.hash(
+            password,
+            10
+          );
           // Create a new user in the database
           const newUser = await User.create({
             username,
@@ -122,7 +129,7 @@ module.exports = {
       );
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -143,7 +150,7 @@ module.exports = {
       return res.json(userData);
     } catch (error) {
       console.log(error.message);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -163,7 +170,6 @@ module.exports = {
       if (!userToFollow) {
         return res.status(404).json({ message: "User not found" });
       }
-      console.log("---------------  ", userToFollow);
       // Add the user to the current user's following list
       const alreadyFollowing = await User.findOne({ id: req.user.id }).populate(
         "following",
@@ -202,7 +208,7 @@ module.exports = {
       return res.json(updatedUser);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
   /**
@@ -225,7 +231,7 @@ module.exports = {
       return res.status(200).json(followList);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
   /**
@@ -248,7 +254,7 @@ module.exports = {
       return res.status(200).json(followerList);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
   /**
@@ -270,7 +276,7 @@ module.exports = {
       return res.status(200).json(data);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
   /**
@@ -295,7 +301,7 @@ module.exports = {
       return res.json(userData);
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
   /**
@@ -329,14 +335,14 @@ module.exports = {
             return res.badRequest("No file was uploaded");
           }
 
-          console.log("====================================");
-          console.log(uploadedFiles[0]);
-          console.log("====================================");
           profilePic = uploadedFiles[0].fd;
 
-          const result = await sails.config.custom.cloudinary.uploader.upload(profilePic, {
-            unique_filename: true,
-          });
+          const result = await sails.config.custom.cloudinary.uploader.upload(
+            profilePic,
+            {
+              unique_filename: true,
+            }
+          );
 
           // Delete image from local storage
           fs.unlink(profilePic, (err) => {
@@ -365,7 +371,7 @@ module.exports = {
       );
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
   /**
@@ -383,16 +389,22 @@ module.exports = {
         return res.status(404).json({ message: "User not found" });
       }
       const { oldPassword, newPassword } = req.body;
-      const isMatch = await sails.config.custom.bcrypt.compare(oldPassword, validUser.password);
+      const isMatch = await sails.config.custom.bcrypt.compare(
+        oldPassword,
+        validUser.password
+      );
       if (!isMatch) {
         return res.status(401).json({ message: "Incorrect password" });
       }
-      const hashedPassword = await sails.config.custom.bcrypt.hash(newPassword, 10);
+      const hashedPassword = await sails.config.custom.bcrypt.hash(
+        newPassword,
+        10
+      );
       await User.updateOne({ id: id }).set({ password: hashedPassword });
       return res.status(200).json({ message: "Password changed" });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -409,7 +421,7 @@ module.exports = {
       return res.json({ message: "successfully logged out" });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 
@@ -431,7 +443,7 @@ module.exports = {
       });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
     }
   },
 };
