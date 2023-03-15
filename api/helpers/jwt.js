@@ -1,8 +1,4 @@
-
-// api/helpers/jwt.js
-
 const jwt = require("jsonwebtoken");
-
 
 module.exports = {
   friendlyName: 'Create token',

@@ -15,10 +15,13 @@ module.exports.routes = {
   "GET /admin/dashboard": "AdminController.dashboard",
   "GET /admin/users/posts/:id": "AdminController.postById",
   "GET /like/:postId": "PostsController.toggleLike",
+  "GET /save/:postId": "PostsController.savePost",
   "GET /profile": "UserController.userProfile",
   "GET /profile/following": "UserController.followingList",
   "GET /profile/followers": "UserController.followersList",
   "GET /profile/likes": "UserController.myLikeList",
+  "GET /profile/saved": "UserController.mySaveList",
+  "GET /profile/shared-post": "UserController.sharedPosts",
 
   "POST /login": "UserController.login",
   "POST /signup": "UserController.signup",
@@ -29,6 +32,7 @@ module.exports.routes = {
   "POST /profile": "UserController.updateProfile",
   "POST /create-post": "PostsController.createPost",
   "POST /admin/toggleUser/:userId": "AdminController.toggleUserIsActive",
+  "POST /post/share/:postId": "PostsController.sharePost",
 
   "DELETE /post/:id": "PostsController.deletePost",
   "DELETE /delete-account": "UserController.deleteUser",

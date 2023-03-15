@@ -29,6 +29,14 @@ module.exports = {
     postBy: {
       model: 'User', required: true
     },
+    save: {
+      collection: 'Savedpost',
+      via: 'post'
+    },
+    sharedWith: {
+      collection: 'PostShare',
+      via: 'post'
+    }
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝

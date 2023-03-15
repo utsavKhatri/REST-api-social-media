@@ -5,6 +5,7 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+
 module.exports = {
   /**
    * Authenticates the user by email and password and returns a JWT token upon successful login.
@@ -279,6 +280,38 @@ module.exports = {
       return res.status(500).json({ message: error.message });
     }
   },
+
+  mySaveList: async (req, res) => {
+    const { id } = req.user;
+    try {
+      const mySave = await Savedpost.find({ user: id }).populate("post");
+      if (!mySave) {
+        return res.status(404).json({ message: "Saved list empty" });
+      }
+      const data = mySave.map((like) => like.post);
+      return res.status(200).json(data);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+
+  // other shared post to current user
+  sharedPosts: async (req, res)=> {
+    try {
+      const user = await User.findOne({ id: req.user.id }).populate('sharedPosts');
+      if (!user) {
+        return res.notFound();
+      }
+
+      // const dataOne = await PostShare.find().populate('post').populate('sharedWith');
+      // const dataTwo = dataOne.map((post) => post.sharedWith.filter((user) => (user.id !== req.user.id)));
+      const sharedPosts = user.sharedPosts;
+      return res.json(sharedPosts);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }},
   /**
    * get user profile
    * @param {Number} req user.id

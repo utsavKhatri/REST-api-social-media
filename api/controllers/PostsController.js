@@ -5,7 +5,6 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-
 module.exports = {
   /**
    * Retrieves posts with details of the user who created it and the last 10 comments made on it.
@@ -94,9 +93,12 @@ module.exports = {
           }
           console.log("------------------", uploadedFiles[0]);
           postPic = uploadedFiles[0].fd;
-          const result = await sails.config.custom.cloudinary.uploader.upload(postPic, {
-            unique_filename: true,
-          });
+          const result = await sails.config.custom.cloudinary.uploader.upload(
+            postPic,
+            {
+              unique_filename: true,
+            }
+          );
 
           // Delete image from local storage
           sails.config.custom.fs.unlink(postPic, (err) => {
@@ -155,6 +157,83 @@ module.exports = {
       }
 
       return res.json({ data: posts });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+
+  savePost: async (req, res) => {
+    const { postId } = req.params;
+    try {
+      const postToSave = await Posts.findOne({ id: postId });
+
+      if (!postToSave) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      // Add the user to the current user's following list
+      const saveId = await Savedpost.find({ user: req.user.id });
+      const alreadySave = await Savedpost.findOne({
+        user: req.user.id,
+        post: postId,
+      });
+      if (alreadySave) {
+        await Savedpost.destroy({ id: saveId.id });
+        const updatedPost = await Posts.findOne({ id: postToSave.id }).populate(
+          "save"
+        );
+        console.log("updatedPost--->", updatedPost);
+        return res.json(updatedPost);
+      }
+      const savePost = await Savedpost.create({
+        user: req.user.id,
+        post: postId,
+      }).fetch();
+      await Posts.addToCollection(postToSave.id, "save", savePost.id);
+
+      // Return the updated user object
+      const updatedPost = await Posts.findOne({ id: postToSave.id }).populate(
+        "save"
+      );
+      return res.json(updatedPost);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  sharePost: async (req, res) => {
+    const { postId } = req.params;
+    try {
+      const postToShare = await Posts.findOne({ id: postId });
+      if (!postToShare) {
+        return res.status(404).json({ message: "Post not found" });
+      }
+      const sharedWith = req.body.sharedWith;
+      console.log("sharedWith--->", sharedWith);
+      if (sharedWith === req.user.id) {
+        return res
+          .status(400)
+          .json({ message: "You cannot share your own post" });
+      }
+      if (!sharedWith || sharedWith.length === 0) {
+        return res.badRequest(
+          "At least one user must be specified to share the post with."
+        );
+      }
+      const users = await User.find();
+
+      var shareToUsers = [];
+      if (sharedWith.includes(",")) {
+        shareToUsers = sharedWith.split(",");
+      } else {
+        shareToUsers.push(sharedWith);
+      }
+      console.log("users--->", users);
+      const postShare = await PostShare.create({
+        post: postId,
+        sharedWith: shareToUsers,
+      });
+      return res.json(postShare);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: error.message });
