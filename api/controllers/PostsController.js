@@ -30,7 +30,7 @@ module.exports = {
         .populate("postBy")
         .populate("like")
         .populate("comments")
-        .sort("createdAt DESC")
+        .sort("createdAt DESC").populate("sharedWith").populate("save")
         .skip(skip)
         .limit(itemsPerPage)
         .meta({
@@ -46,6 +46,8 @@ module.exports = {
           caption: post.caption,
           postBy: post.postBy.username,
           likes: post.like.length,
+          saves: post.save.length,
+          shares: post.sharedWith.length,
           comments: post.comments.map((c) => {
             return c.text;
           }),
@@ -162,7 +164,13 @@ module.exports = {
       return res.status(500).json({ message: error.message });
     }
   },
-
+  /**
+   * save post by user
+   * @param {Object} req - postId and userId
+   * @param {Object} res - response object postShare
+   * @returns {Object} Returns a JSON object updated savePost
+   * @throws {Error} Throws an error if there is an issue sharePost
+   */
   savePost: async (req, res) => {
     const { postId } = req.params;
     try {
@@ -201,6 +209,13 @@ module.exports = {
       return res.status(500).json({ message: error.message });
     }
   },
+  /**
+   * allow user to share post to other user
+   * @param {Object} req - postId and userId of the user who wants to share the post.
+   * @param {Object} res - response object.
+   * @returns {Object} Returns a JSON object updated savePost
+   * @throws {Error} Throws an error if there is an issue retrieving savePost.
+   */
   sharePost: async (req, res) => {
     const { postId } = req.params;
     try {
@@ -221,18 +236,12 @@ module.exports = {
         );
       }
       const users = await User.find();
-
-      var shareToUsers = [];
-      if (sharedWith.includes(",")) {
-        shareToUsers = sharedWith.split(",");
-      } else {
-        shareToUsers.push(sharedWith);
-      }
       console.log("users--->", users);
       const postShare = await PostShare.create({
         post: postId,
-        sharedWith: shareToUsers,
-      });
+        sharedWith: sharedWith,
+        shareBy: req.user.id,
+      }).fetch();
       return res.json(postShare);
     } catch (error) {
       console.log(error);

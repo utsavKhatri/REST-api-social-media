@@ -94,7 +94,11 @@ module.exports = {
       if (!validUser) {
         return res.status(404).json({ message: "invalid user" });
       }
-      const post = await Posts.find({ postBy: id }).sort("createdAt DESC");
+      const post = await Posts.find({ postBy: id })
+        .populate("comments")
+        .populate("sharedWith")
+        .populate("save").populate("like")
+        .sort("createdAt DESC");
       return res.json(post);
     } catch (err) {
       console.log(err.message);

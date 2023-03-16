@@ -5,7 +5,6 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
-
 module.exports = {
   /**
    * Authenticates the user by email and password and returns a JWT token upon successful login.
@@ -280,7 +279,14 @@ module.exports = {
       return res.status(500).json({ message: error.message });
     }
   },
-
+  /**
+   * Allows user to see saved posts
+   * @function
+   * @async
+   * @param {Object} req - request object with authenticated user ID
+   * @param {Object} res - response object data
+   * @returns {Object} - Returns a JSON response with posts that user save or an error message
+   */
   mySaveList: async (req, res) => {
     const { id } = req.user;
     try {
@@ -296,22 +302,33 @@ module.exports = {
     }
   },
 
-  // other shared post to current user
-  sharedPosts: async (req, res)=> {
+  /**
+   * Allows user to see received posts that shared by another user
+   * @function
+   * @async
+   * @param {Object} req - request object with authenticated user ID
+   * @param {Object} res - response object data
+   * @returns {Object} - Returns a JSON response with posts that user receive by other or an error message
+   */
+  sharedPosts: async (req, res) => {
     try {
-      const user = await User.findOne({ id: req.user.id }).populate('sharedPosts');
-      if (!user) {
-        return res.notFound();
+      const sharePostData = await PostShare.find({
+        sharedWith: req.user.id,
+      })
+        .populate("post")
+        .populate("shareBy");
+      if (!sharePostData) {
+        return res.status(404).json({ message: "Shared posts list empty" });
       }
-
-      // const dataOne = await PostShare.find().populate('post').populate('sharedWith');
-      // const dataTwo = dataOne.map((post) => post.sharedWith.filter((user) => (user.id !== req.user.id)));
-      const sharedPosts = user.sharedPosts;
-      return res.json(sharedPosts);
+      const data = sharePostData.map((post) => {
+        return { shareBy: post.shareBy.username, post: post.post };
+      });
+      return res.json(data);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: error.message });
-    }},
+    }
+  },
   /**
    * get user profile
    * @param {Number} req user.id
@@ -324,7 +341,7 @@ module.exports = {
         .populate("posts")
         .populate("following")
         .populate("followers")
-        .populate("comments")
+        .populate("comments").populate("savedposts").populate("sharedPosts")
         .populate("likes");
 
       if (!userData) {
@@ -466,10 +483,12 @@ module.exports = {
   deleteUser: async (req, res) => {
     const userid = req.user.id;
     try {
-      const deleteLike = await Like.destroy({ user: userid });
-      const deletedComment = await Comment.destroy({ user: userid });
-      const deletedPost = await Posts.destroy({ postBy: userid });
-      const deletedUser = await User.destroy({ id: userid });
+      const delSaved = await Savedpost.destroy({ user: userid });
+      const delShared = await PostShare.destroy({ shareBy: userid });
+      const delComment = await Comment.destroy({ user: userid });
+      const deletedLike = await Like.destroy({ user: userid });
+      const deletedPost = await Posts.destroy({ postBy: userid }).meta({ cascade: true });
+      const deletedUser = await User.destroy({ id: userid }).meta({ cascade: true });
       return res.json({
         message:
           "You successfully delete your account with post and comments successfully.",

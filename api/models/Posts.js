@@ -36,6 +36,9 @@ module.exports = {
     sharedWith: {
       collection: 'PostShare',
       via: 'post'
+    },
+    shares:{
+      collection: 'PostShare',
     }
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
