@@ -11,9 +11,16 @@
 			"item": [
 				{
 					"name": "homepage",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
 						"url": {
 							"raw": "http://localhost:1337/home",
 							"protocol": "http",
@@ -23,6 +30,23 @@
 							"port": "1337",
 							"path": [
 								"home"
+							],
+							"query": [
+								{
+									"key": "searchTerm",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "pageSize",
+									"value": "3",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -38,13 +62,13 @@
 							"formdata": [
 								{
 									"key": "caption",
-									"value": "new post 6 by another",
+									"value": "",
 									"type": "text"
 								},
 								{
 									"key": "postpic",
 									"type": "file",
-									"src": "/Users/ztlab130/Downloads/test.jpg"
+									"src": []
 								}
 							]
 						},
@@ -68,7 +92,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/like/640ecd1aa56984469e901510",
+							"raw": "http://localhost:1337/like/6412c416c7ac1425c4a4c881",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -76,7 +100,7 @@
 							"port": "1337",
 							"path": [
 								"like",
-								"640ecd1aa56984469e901510"
+								"6412c416c7ac1425c4a4c881"
 							]
 						}
 					},
@@ -92,13 +116,13 @@
 							"formdata": [
 								{
 									"key": "text",
-									"value": "c2",
+									"value": "comment by self 3",
 									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "http://localhost:1337/comment/640ecd1ea56984469e901511",
+							"raw": "http://localhost:1337/comment/6412b8feaa53311d83ce72cb",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -106,7 +130,7 @@
 							"port": "1337",
 							"path": [
 								"comment",
-								"640ecd1ea56984469e901511"
+								"6412b8feaa53311d83ce72cb"
 							]
 						}
 					},
@@ -118,7 +142,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/search?searchQuery=ui",
+							"raw": "http://localhost:1337/search?searchQuery=6",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -130,7 +154,7 @@
 							"query": [
 								{
 									"key": "searchQuery",
-									"value": "ui"
+									"value": "6"
 								}
 							]
 						}
@@ -143,7 +167,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/user/follow/640eccd1a56984469e90150e",
+							"raw": "http://localhost:1337/user/follow/640f0a53d0f267758c125fa6",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -152,7 +176,7 @@
 							"path": [
 								"user",
 								"follow",
-								"640eccd1a56984469e90150e"
+								"640f0a53d0f267758c125fa6"
 							]
 						}
 					},
@@ -176,7 +200,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "64057bd3790487174448e122",
+									"value": "64116c9658c13a399763574c",
 									"disabled": true
 								}
 							]
@@ -263,9 +287,16 @@
 				},
 				{
 					"name": "list of following",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"method": "GET",
 						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
 						"url": {
 							"raw": "http://localhost:1337/profile/following",
 							"protocol": "http",
@@ -320,6 +351,173 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "change password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "oldPassword",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "newPassword",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:1337/profile/change-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"profile",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete post",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/post/64116ccc58c13a399763574d",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"post",
+								"64116ccc58c13a399763574d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "toggle save post",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/save/640f0a88d0f267758c125fa9",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"save",
+								"640f0a88d0f267758c125fa9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saved list",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1337/profile/saved",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"profile",
+								"saved"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "share post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "sharedWith",
+									"value": "640f0a53d0f267758c125fa6",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:1337/post/share/6412b8feaa53311d83ce72cb",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"post",
+								"share",
+								"6412b8feaa53311d83ce72cb"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "receive shared post by other user list",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:1337/profile/shared-post",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"profile",
+								"shared-post"
+							],
+							"query": [
+								{
+									"key": "shareWidth",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
@@ -327,7 +525,7 @@
 				"bearer": [
 					{
 						"key": "token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MGVjY2MxYTU2OTg0NDY5ZTkwMTUwZCIsImFkbWluIjp0cnVlLCJpYXQiOjE2Nzg2OTMyOTIsImV4cCI6MTY3ODcwMDQ5Mn0.vXOlKcALpI_907hpg7vof6cbuVU-5EWBd1GYZKdoOsw",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MGYwYTUzZDBmMjY3NzU4YzEyNWZhNiIsImlhdCI6MTY3ODk1MTUwMiwiZXhwIjoxNjc4OTU4NzAyfQ.Ra4Unpd2_1KsJ7_jv2RHojhIuwUwbbh4c6vbXlUxq6M",
 						"type": "string"
 					}
 				]
@@ -382,7 +580,7 @@
 								{
 									"key": "profilePhoto",
 									"type": "file",
-									"src": "/Users/ztlab130/untitled folder/REST api social media/test/integration/controllers/test.jpg"
+									"src": []
 								}
 							]
 						},
@@ -410,12 +608,12 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "admin@gmail.com",
+									"value": "",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "admin123",
+									"value": "",
 									"type": "text"
 								}
 							]
@@ -433,6 +631,63 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "forgotpassword",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "",
+									"type": "text"
+								},
+								{
+									"key": "newPassword",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:1337/forgot-password",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		},
@@ -454,6 +709,23 @@
 							"path": [
 								"admin",
 								"dashboard"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "pageSize",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "searchTerm",
+									"value": "pal",
+									"disabled": true
+								}
 							]
 						}
 					},
@@ -465,7 +737,7 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/admin/toggleUser/640eccd8a56984469e90150f",
+							"raw": "http://localhost:1337/admin/toggleUser/640ee05922580b5097bef90c",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -474,7 +746,7 @@
 							"path": [
 								"admin",
 								"toggleUser",
-								"640eccd8a56984469e90150f"
+								"640ee05922580b5097bef90c"
 							]
 						}
 					},
@@ -486,7 +758,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/admin/users/posts/64057bd3790487174448e122",
+							"raw": "http://localhost:1337/admin/users/posts/6411baa0d2830659ede5e0f6",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -496,7 +768,7 @@
 								"admin",
 								"users",
 								"posts",
-								"64057bd3790487174448e122"
+								"6411baa0d2830659ede5e0f6"
 							]
 						}
 					},
@@ -508,7 +780,7 @@
 				"bearer": [
 					{
 						"key": "token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MGVjY2MxYTU2OTg0NDY5ZTkwMTUwZCIsImFkbWluIjp0cnVlLCJpYXQiOjE2Nzg2OTMyOTIsImV4cCI6MTY3ODcwMDQ5Mn0.vXOlKcALpI_907hpg7vof6cbuVU-5EWBd1GYZKdoOsw",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MGYwYTY3ZDBmMjY3NzU4YzEyNWZhOCIsImFkbWluIjp0cnVlLCJpYXQiOjE2Nzg5NDU5MDYsImV4cCI6MTY3ODk1MzEwNn0.nl76j5qfe5A2n-u7ROkf3z2V3eJeqYBqSCGRrGa0nrI",
 						"type": "string"
 					}
 				]
