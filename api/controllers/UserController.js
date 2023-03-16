@@ -341,7 +341,9 @@ module.exports = {
         .populate("posts")
         .populate("following")
         .populate("followers")
-        .populate("comments").populate("savedposts").populate("sharedPosts")
+        .populate("comments")
+        .populate("savedposts")
+        .populate("sharedPosts")
         .populate("likes");
 
       if (!userData) {
@@ -457,6 +459,31 @@ module.exports = {
       return res.status(500).json({ message: error.message });
     }
   },
+  /**
+   * Allows user forgot password and set new password
+   * @function
+   * @async
+   * @param {Object} req - request object with authenticated user ID
+   * @param {Object} res - response message and update user
+   */
+  forgotPassword: async (req, res) => {
+    const { email, newPassword } = req.body;
+    try {
+      const isUser = await User.findOne({ email: email });
+      if (!isUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const hashedPassword = await sails.config.custom.bcrypt.hash(
+        newPassword,
+        10
+      );
+      await User.updateOne({ email: email }).set({ password: hashedPassword });
+      return res.status(200).json({ message: "Password changed Successfully" });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
 
   /**
    * A logout function that log out user
@@ -487,8 +514,12 @@ module.exports = {
       const delShared = await PostShare.destroy({ shareBy: userid });
       const delComment = await Comment.destroy({ user: userid });
       const deletedLike = await Like.destroy({ user: userid });
-      const deletedPost = await Posts.destroy({ postBy: userid }).meta({ cascade: true });
-      const deletedUser = await User.destroy({ id: userid }).meta({ cascade: true });
+      const deletedPost = await Posts.destroy({ postBy: userid }).meta({
+        cascade: true,
+      });
+      const deletedUser = await User.destroy({ id: userid }).meta({
+        cascade: true,
+      });
       return res.json({
         message:
           "You successfully delete your account with post and comments successfully.",

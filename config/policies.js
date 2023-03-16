@@ -22,6 +22,7 @@ module.exports.policies = {
     "*": "isLoggedin",
     "login": true,
     "signup": true,
+    "forgotPassword": true,
   },
   PostsController:{
     "*": "isLoggedin",
