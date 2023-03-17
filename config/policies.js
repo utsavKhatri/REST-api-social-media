@@ -25,7 +25,7 @@ module.exports.policies = {
     "forgotPassword": true,
   },
   PostsController:{
-    "*": "isLoggedin",
+    "*": ['uploadImage', 'isLoggedin'],
   },
   AdminController:{
     "*":"isAdminCheck"

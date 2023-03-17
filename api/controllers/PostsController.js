@@ -5,6 +5,8 @@
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
 
+const cloudinary = require("cloudinary").v2;
+const streamifier = require('streamifier');
 module.exports = {
   /**
    * Retrieves posts with details of the user who created it and the last 10 comments made on it.
@@ -15,6 +17,7 @@ module.exports = {
    * @returns {Object} - JSON object containing post data with user and comment details
    */
   home: async (req, res) => {
+    kjli = req.user.id;
     const { page, pageSize, searchTerm } = req.query;
     const currentPage = parseInt(page, 10) || 1;
     const itemsPerPage = parseInt(pageSize, 10) || 10;
@@ -30,7 +33,9 @@ module.exports = {
         .populate("postBy")
         .populate("like")
         .populate("comments")
-        .sort("createdAt DESC").populate("sharedWith").populate("save")
+        .sort("createdAt DESC")
+        .populate("sharedWith")
+        .populate("save")
         .skip(skip)
         .limit(itemsPerPage)
         .meta({
@@ -75,60 +80,92 @@ module.exports = {
    */
 
   createPost: async (req, res) => {
+    const { caption } = req.body;
+    const postpic = req.file;
+    console.log("---------> ", postpic);
     try {
-      const { caption } = req.body;
       if (!caption) {
-        return res.status(500).json({ message: "enter something in caption" });
+        return res.status(400).json({ message: "Caption is required" });
       }
-      let postPic;
-      await req.file("postpic").upload(
-        {
-          dirname: require("path").resolve(sails.config.appPath, "assets"),
-          maxBytes: 10000000, // 10 MB
-        },
-        async (err, uploadedFiles) => {
-          if (err) {
-            return res.serverError(err);
-          }
-          if (uploadedFiles.length === 0) {
-            return res.badRequest("No file was uploaded");
-          }
-          console.log("------------------", uploadedFiles[0]);
-          postPic = uploadedFiles[0].fd;
-          const result = await sails.config.custom.cloudinary.uploader.upload(
-            postPic,
-            {
-              unique_filename: true,
-            }
-          );
+      if (!postpic) {
+        const newPost = await Posts.create({
+          caption,
+          postBy: req.user.id,
+        }).fetch();
+        console.log(newPost);
+        return res.json(newPost);
+      }
 
-          // Delete image from local storage
-          sails.config.custom.fs.unlink(postPic, (err) => {
-            if (err) {
-              return console.log(err);
-            }
-            console.log("successfully deleted");
-          });
-          console.log(result.secure_url, caption);
-
-          const newPost = await Posts.create({
-            image: result.secure_url,
-            caption: caption,
-            postBy: req.user.id,
-          }).fetch();
-
-          return res.json({
-            newPost,
-            message: "post created successfully",
-          });
+      let cld_upload_stream = cloudinary.uploader.upload_stream(
+        async (error, result) => {
+            console.log(error, result);
+            const newPost = await Posts.create({
+              caption,
+              image: result.secure_url,
+              postBy: req.user.id,
+            }).fetch();
+            console.log(newPost);
+            return res.json(newPost);
         }
-      );
+    );
+    streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: error.message });
     }
   },
 
+  // createPost: async (req, res) => {
+  //   try {
+  //     const { caption } = req.body;
+  //     if (!caption) {
+  //       return res.status(500).json({ message: "enter something in caption" });
+  //     }
+  //     let postPic;
+  //     await req.file("postpic").upload(
+  //       {
+  //         dirname: require("path").resolve(sails.config.appPath, "assets"),
+  //         maxBytes: 10000000, // 10 MB
+  //       },
+  //       async (err, uploadedFiles) => {
+  //         if (err) {
+  //           return res.serverError(err);
+  //         }
+  //         if (uploadedFiles.length === 0) {
+  //           return res.badRequest("No file was uploaded");
+  //         }
+  //         console.log("------------------", uploadedFiles[0]);
+  //         postPic = uploadedFiles[0].fd;
+  //         const result = await sails.config.custom.cloudinary.uploader.upload(postPic, {
+  //           unique_filename: true,
+  //         });
+
+  //         // Delete image from local storage
+  //         sails.config.custom.fs.unlink(postPic, (err) => {
+  //           if (err) {
+  //             return console.log(err);
+  //           }
+  //           console.log("successfully deleted");
+  //         });
+  //         console.log(result.secure_url, caption);
+
+  //         const newPost = await Posts.create({
+  //           image: result.secure_url,
+  //           caption: caption,
+  //           postBy: req.user.id,
+  //         }).fetch();
+
+  //         return res.json({
+  //           newPost,
+  //           message: "post created successfully",
+  //         });
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.log(error);
+  //     return res.status(500).json({ message: error.message });
+  //   }
+  // },
   /**
    * Retrieves posts based on a search query and returns them as a JSON object.
    * @param {Object} req - Express request object.

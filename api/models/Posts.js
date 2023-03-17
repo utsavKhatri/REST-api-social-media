@@ -8,8 +8,7 @@
 module.exports = {
   attributes: {
     image: {
-      type: "string",
-      required: true,
+      type: "string"
     },
 
     caption: {
