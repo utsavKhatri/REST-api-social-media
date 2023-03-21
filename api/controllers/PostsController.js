@@ -49,7 +49,7 @@ module.exports = {
           id: post.id,
           image: post.image,
           caption: post.caption,
-          postBy: post.postBy.username,
+          postBy: post.postBy,
           likes: post.like.length,
           saves: post.save.length,
           shares: post.sharedWith.length,

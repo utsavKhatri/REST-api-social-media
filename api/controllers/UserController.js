@@ -4,7 +4,8 @@
  * @description :: Server-side actions for handling incoming requests.
  * @help        :: See https://sailsjs.com/docs/concepts/actions
  */
-
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
 module.exports = {
   /**
    * Authenticates the user by email and password and returns a JWT token upon successful login.
@@ -62,50 +63,40 @@ module.exports = {
    * @param {Object} res - created user object
    * @returns {Object} - Returns a JSON response with the registered user data or an error message
    */
+
   signup: async (req, res) => {
     try {
       console.log(req.body);
+      var postpic = req.file;
+      console.log("---------> ", postpic);
       const { username, email, password } = req.body;
-      let profilePic;
       if (!username || !email || !password) {
         return res.status(500).json({ message: "enter something in input" });
       }
 
-      // Uploading the image to cloudinary and create user account
-      await req.file("profilePhoto").upload(
-        {
-          dirname: require("path").resolve(sails.config.appPath, "assets"),
-          maxBytes: 10000000,
-        },
-        async (err, uploadedFiles) => {
-          if (err) {
-            return res.serverError(err);
-          }
-          if (uploadedFiles.length === 0) {
-            return res.badRequest("No file was uploaded");
-          }
-          profilePic = uploadedFiles[0].fd;
-          console.log(profilePic);
-          const result = await sails.config.custom.cloudinary.uploader.upload(
-            profilePic,
-            {
-              unique_filename: true,
-            }
-          );
+      if (!postpic) {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+          return res.status(409).json({ message: "User already exists" });
+        }
 
-          console.log(result);
+        // Hash the password
+        const hashedPassword = await sails.config.custom.bcrypt.hash(
+          password,
+          10
+        );
+        const newUser = await User.create({
+          username,
+          email,
+          password: hashedPassword,
+        }).fetch();
+        console.log(newUser);
+        return res.status(201).json({ message: "user created successfully", newUser });
+      }
 
-          // Delete image from local storage
-          sails.config.custom.fs.unlink(profilePic, (err) => {
-            if (err) {
-              return console.log(err);
-            }
-            console.log("successfully deleted");
-          });
-
-          console.log(username, email, password, result.secure_url);
-
-          // Check if user already exists in the database
+      let cld_upload_stream = await cloudinary.uploader.upload_stream(
+        async (error, result) => {
+          console.log(error, result);
           const existingUser = await User.findOne({ email });
           if (existingUser) {
             return res.status(409).json({ message: "User already exists" });
@@ -116,17 +107,17 @@ module.exports = {
             password,
             10
           );
-          // Create a new user in the database
           const newUser = await User.create({
             username,
             email,
             password: hashedPassword,
             profilePic: result.secure_url,
           }).fetch();
-
-          return res.json({ message: "register successfully", data: newUser });
+          console.log(newUser);
+          return res.status(201).json({ message: "register successfully", newUser });
         }
       );
+      streamifier.createReadStream(postpic.buffer).pipe(cld_upload_stream);
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: error.message });

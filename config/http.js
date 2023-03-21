@@ -9,6 +9,12 @@
  * https://sailsjs.com/config/http
  */
 
+const { graphqlHTTP } = require("express-graphql");
+const resolvers = require("../graphql/resolvers");
+const schema = require("../graphql/schema");
+var bodyParser = require('body-parser');
+var skipper = require('skipper');
+
 module.exports.http = {
   /****************************************************************************
    *                                                                           *
@@ -34,6 +40,8 @@ module.exports.http = {
       "fileMiddleware",
       "compress",
       "poweredBy",
+      "graphql",
+      "cors",
       "router",
       "www",
       "favicon",
@@ -58,5 +66,17 @@ module.exports.http = {
       const upload = multer();
       return upload.single("postpic");
     })(),
+    cors: function (req, res, next) {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.header("Access-Control-Allow-Methods", "*");
+      res.header("Access-Control-Allow-Headers", "*");
+      // res.header('Access-Control-Allow-Credentials', true);
+      next();
+    },
+    graphql: graphqlHTTP({
+      schema: schema,
+      rootValue: resolvers,
+      graphiql: true,
+    }),
   },
 };
