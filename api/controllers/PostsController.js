@@ -6,7 +6,7 @@
  */
 
 const cloudinary = require("cloudinary").v2;
-const streamifier = require('streamifier');
+const streamifier = require("streamifier");
 module.exports = {
   /**
    * Retrieves posts with details of the user who created it and the last 10 comments made on it.
@@ -30,12 +30,8 @@ module.exports = {
     }
     try {
       const postData = await Posts.find(searchQuery)
-        .populate("postBy")
-        .populate("like")
-        .populate("comments")
+        .populateAll()
         .sort("createdAt DESC")
-        .populate("sharedWith")
-        .populate("save")
         .skip(skip)
         .limit(itemsPerPage)
         .meta({
@@ -98,17 +94,17 @@ module.exports = {
 
       let cld_upload_stream = cloudinary.uploader.upload_stream(
         async (error, result) => {
-            console.log(error, result);
-            const newPost = await Posts.create({
-              caption,
-              image: result.secure_url,
-              postBy: req.user.id,
-            }).fetch();
-            console.log(newPost);
-            return res.json(newPost);
+          console.log(error, result);
+          const newPost = await Posts.create({
+            caption,
+            image: result.secure_url,
+            postBy: req.user.id,
+          }).fetch();
+          console.log(newPost);
+          return res.json(newPost);
         }
-    );
-    streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);
+      );
+      streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: error.message });
@@ -260,7 +256,7 @@ module.exports = {
       if (!postToShare) {
         return res.status(404).json({ message: "Post not found" });
       }
-      const sharedWith = req.body.sharedWith;
+      const sharedWith = req.query.sharedWith;
       console.log("sharedWith--->", sharedWith);
       if (sharedWith === req.user.id) {
         return res

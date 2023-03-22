@@ -9,25 +9,27 @@
  */
 
 module.exports.policies = {
-
   /***************************************************************************
-  *                                                                          *
-  * Default policy for all controllers and actions, unless overridden.       *
-  * (`true` allows public access)                                            *
-  *                                                                          *
-  ***************************************************************************/
+   *                                                                          *
+   * Default policy for all controllers and actions, unless overridden.       *
+   * (`true` allows public access)                                            *
+   *                                                                          *
+   ***************************************************************************/
 
   // '*': true,
   UserController: {
     "*": "isLoggedin",
-    "login": true,
-    "signup": true,
-    "forgotPassword": true,
+    login: true,
+    signup: true,
+    forgotPassword: true,
   },
-  PostsController:{
-    "*": 'isLoggedin'
+  PostsController: {
+    "*": "isLoggedin",
   },
-  AdminController:{
-    "*":"isAdminCheck"
-  }
+  AdminController: {
+    "*": "isAdminCheck",
+  },
+  GraphQlController: {
+    "*": "isLoggedin",
+  },
 };

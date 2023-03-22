@@ -40,7 +40,6 @@ module.exports.http = {
       "fileMiddleware",
       "compress",
       "poweredBy",
-      "graphql",
       "cors",
       "router",
       "www",
@@ -73,10 +72,5 @@ module.exports.http = {
       // res.header('Access-Control-Allow-Credentials', true);
       next();
     },
-    graphql: graphqlHTTP({
-      schema: schema,
-      rootValue: resolvers,
-      graphiql: true,
-    }),
   },
 };

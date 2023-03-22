@@ -37,4 +37,5 @@ module.exports.routes = {
 
   "DELETE /post/:id": "PostsController.deletePost",
   "DELETE /delete-account": "UserController.deleteUser",
+  "POST /graphql":"GraphQlController.graphql"
 };

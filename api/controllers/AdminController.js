@@ -29,9 +29,7 @@ module.exports = {
 
     try {
       const userData = await User.find(searchQuery)
-        .populate("posts", { select: ["caption", "image"] })
-        .populate("comments", { limit: 10, select: ["text"] })
-        .populate("likes")
+        .populateAll()
         .sort("createdAt DESC")
         .skip(skip)
         .limit(itemsPerPage)
@@ -95,9 +93,7 @@ module.exports = {
         return res.status(404).json({ message: "invalid user" });
       }
       const post = await Posts.find({ postBy: id })
-        .populate("comments")
-        .populate("sharedWith")
-        .populate("save").populate("like")
+        .populateAll()
         .sort("createdAt DESC");
       return res.json(post);
     } catch (err) {

@@ -1,25 +1,41 @@
-const { buildSchema } = require('graphql');
+const { buildSchema } = require("graphql");
 
 const schema = buildSchema(`
 type Posts {
   id: ID!
-  image: String
+  image: String!
   caption: String!
   postBy: User!
+  like: [Like]
+  comments: [Comment]
+  save: [Savedpost]
+  sharedWith: [PostShare]
+  shares: [PostShare]
 }
 
-input PostInput {
-  image: String
-  caption: String!
-  postBy: ID!
+type Like {
+  id: ID!
+  user: User!
+  post: Posts!
+}
+type Comment {
+  id: ID!
+  user: User!
+  post: Posts!
+  text: String!
+}
+type PostShare {
+  id:ID!
+  shareBy: User!
+  sharedWith: User!
+}
+type Savedpost {
+  id: ID!
+  user: User!
+  post: Posts!
 }
 
 
-type Mutation {
-  createPost(input: PostInput!): Posts
-  updatePost(id: ID!, input: PostInput!): Posts
-  deletePost(id: ID!): Posts
-}
 
   
   type User {
@@ -28,17 +44,27 @@ type Mutation {
     email: String!
     password: String!
     profilePic: String!
+    posts: [Posts]!
+    comments: [Comment]!
+    likes: [Like]!
+    savedPosts: [Savedpost]!
+    sharedPosts: [PostShare]!
+    followers: [User]!
+    following: [User]!
     isAdmin: Boolean!
     isActive: Boolean!
-    posts: [Posts]!
     token: String!
-    createdAt: String!
-    updatedAt: String!
   }
 
 
   type Query {
-    postsa: String!
+    getAllPosts: [Posts!]!
+    getUser(id: ID!): User!
+    getAllUsers: [User!]!
+    getSinglePost(id: ID!): Posts!
+    getUserLike(id: ID!): [Like!]!
+    getCommentlist(id: ID!): [Comment!]!
+    getkano(id:ID!):String
   }
 
 `);
