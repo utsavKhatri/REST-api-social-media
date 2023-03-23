@@ -372,6 +372,8 @@ module.exports = {
       const userId = req.user.id;
       const { text } = req.body;
 
+      console.log("post id is here---->", { postId, text });
+
       // Ensure that the post exists
       const post = await Posts.findOne({ id: postId });
       if (!post && !text) {
@@ -389,7 +391,7 @@ module.exports = {
       await Posts.addToCollection(postId, "comments", comment.id);
       const newData = await Posts.find({ id: postId }).populate("comments");
 
-      return res.json({ commentedData: newData });
+      return res.status(200).json({ message:"comment success", commentedData: newData });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }

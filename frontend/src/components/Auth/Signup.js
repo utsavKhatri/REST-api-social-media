@@ -75,7 +75,7 @@ const Signup = () => {
       .then((response) => {
         if (response.status === 201) {
           alert("successfully created account");
-          navigate("/auth/login");
+          navigate("/login");
           response.json();
         } else {
           response

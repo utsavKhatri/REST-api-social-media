@@ -26,7 +26,7 @@ import { BsFillBookmarkFill, BsFillShareFill } from "react-icons/bs";
 import { useState } from "react";
 
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 
 import CommentCard from "./CommentCard";
@@ -157,9 +157,9 @@ const PostCard = ({ post, reFetchData }) => {
       headers: {
         Authorization: `Bearer ${userData.token}`,
       },
-      body:{
-        "sharedWith":usId
-      }
+      body: {
+        sharedWith: usId,
+      },
     };
     axios
       .request(options)
@@ -176,7 +176,7 @@ const PostCard = ({ post, reFetchData }) => {
       .catch((error) => {
         console.error(error);
       });
-  }
+  };
 
   return (
     <Center py={12}>
@@ -227,16 +227,24 @@ const PostCard = ({ post, reFetchData }) => {
         )}
         <Stack pt={10} align={"center"} alignItems={"left"}>
           <Stack direction={"row"} alignSelf={"right"}>
-            <Stack direction={"row"} spacing={4} align={"center"}>
-              <Avatar size="xs" src={post.postBy.profilePic} alt={"Author"} />
-              <Text
-                color={"gray.500"}
-                fontSize={"sm"}
-                textTransform={"uppercase"}
-              >
-                {post.postBy.username}
-              </Text>
-            </Stack>
+            <Link
+              to={
+                post.postBy.id !== userData.id
+                  ? `/follow/${post.postBy.id}`
+                  : "/profile"
+              }
+            >
+              <Stack direction={"row"} spacing={4} align={"center"}>
+                <Avatar size="xs" src={post.postBy.profilePic} alt={"Author"} />
+                <Text
+                  color={"gray.500"}
+                  fontSize={"sm"}
+                  textTransform={"uppercase"}
+                >
+                  {post.postBy.username}
+                </Text>
+              </Stack>
+            </Link>
           </Stack>
 
           <Heading fontSize={"2xl"} fontFamily={"body"} fontWeight={500}>
@@ -335,7 +343,7 @@ const PostCard = ({ post, reFetchData }) => {
             )}
           </Stack>
           <Stack>
-            {post.comments.length > 1 && <CommentCard post={post} />}
+            <CommentCard post={post} reFetchData={reFetchData} />
           </Stack>
         </Stack>
       </Box>

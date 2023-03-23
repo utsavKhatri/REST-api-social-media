@@ -91,7 +91,9 @@ module.exports = {
           password: hashedPassword,
         }).fetch();
         console.log(newUser);
-        return res.status(201).json({ message: "user created successfully", newUser });
+        return res
+          .status(201)
+          .json({ message: "user created successfully", newUser });
       }
 
       let cld_upload_stream = await cloudinary.uploader.upload_stream(
@@ -114,7 +116,9 @@ module.exports = {
             profilePic: result.secure_url,
           }).fetch();
           console.log(newUser);
-          return res.status(201).json({ message: "register successfully", newUser });
+          return res
+            .status(201)
+            .json({ message: "register successfully", newUser });
         }
       );
       streamifier.createReadStream(postpic.buffer).pipe(cld_upload_stream);
@@ -160,6 +164,9 @@ module.exports = {
 
       if (!userToFollow) {
         return res.status(404).json({ message: "User not found" });
+      }
+      if (userToFollow.id === req.user.id) {
+        return res.status(400).json({ message: "You cannot follow yourself" });
       }
       // Add the user to the current user's following list
       const alreadyFollowing = await User.findOne({ id: req.user.id }).populate(
@@ -483,10 +490,10 @@ module.exports = {
    */
   logout: async (req, res) => {
     const id = req.user.id;
+    console.log("id ", id);
     try {
-      req.headers["authorization"] = null;
       await User.updateOne({ id: id }).set({ token: "" });
-      return res.json({ message: "successfully logged out" });
+      return res.status(200).json({ message: "successfully logged out" });
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: error.message });

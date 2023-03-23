@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Heading,
   Avatar,
@@ -9,23 +8,18 @@ import {
   Text,
   Stack,
   Button,
-  // useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
 import axios from "axios";
 import {  useEffect, useState } from "react";
 import { Card, Col, Container, Row } from "react-bootstrap";
-// import { useNavigate } from "react-router-dom";
-// import { MyContext } from "../context";
-import PostCard from "./PostCard";
+
 
 const UserProfile = () => {
-  // const { userData } = useContext(MyContext);
   const userData = JSON.parse(localStorage.getItem("user-profile"));
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [extras, setExtras] = useState(false);
-  // const navigate = useNavigate();
   const options = {
     method: "POST",
     url: "http://localhost:1337/graphql",
@@ -33,7 +27,8 @@ const UserProfile = () => {
       Authorization: `Bearer ${userData.token}`,
     },
     data: {
-      query: '{\n    getUser(id:"640f0a53d0f267758c125fa6"){\n        id\n        username\n        email\n        profilePic\n        posts{\n            id\n            caption\n            image\n        }\n        following{\n            id\n            username\n            profilePic\n            email\n        }\n        followers{\n            id\n            username\n            profilePic\n            email\n        }\n        comments{\n            id\n            text\n            post{\n                id\n                caption\n                image\n            }\n        }\n        likes{\n            id\n            post{\n                id\n                caption\n                image\n            }\n        }\n    }\n}\n',
+      query: 'query GetUser($id: ID!) {   getUser(id:$id){       id       username       email       profilePic       posts{           id           caption           image       }       following{           id           username           profilePic           email       }       followers{           id           username           profilePic           email       }       comments{           id           text           post{               id               caption               image           }       }       likes{           id           post{               id               caption               image           }       }   }\n}\n',
+      variables: { id: userData.id }
     },
   };
 

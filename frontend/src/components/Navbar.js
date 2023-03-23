@@ -29,30 +29,35 @@ import {
   Img,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
-// import { MyContext } from "../context";
-// import toast, { Toaster } from "react-hot-toast";
-// import { useFormik } from "formik";
-// import { useFormik } from "formik";
+import { MyContext } from "../context";
 
 export default function Navbar() {
   // const {  } = useContext(MyContext);
   const userData = JSON.parse(localStorage.getItem("user-profile"));
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const{ reFetchData} = useContext(MyContext);
   const [file, setFile] = useState(null);
 
   const [caption, setCaption] = useState("");
 
   const navigate = useNavigate();
-  const handleLogout = async () => {
-    await fetch("http://localhost:1337/logout", {
+  const handleLogout = () => {
+    fetch("http://localhost:1337/logout", {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${userData.token}`,
+      },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === 200) {
+          localStorage.clear();
+          navigate("/login");
+          localStorage.setItem("chakra-ui-color-mode", "light");
+          return alert("logout successfully");
+        }
+      })
       .catch((err) => console.log(err));
-    localStorage.clear();
-    navigate("/login");
-    localStorage.setItem("chakra-ui-color-mode", "light");
   };
 
   const handleFileChange = (event) => {
@@ -81,6 +86,7 @@ export default function Navbar() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Success:", data);
+        reFetchData();
         navigate("/");
         onClose();
       })
@@ -108,8 +114,8 @@ export default function Navbar() {
               <Button onClick={onOpen}>+ Create post</Button>
 
               <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
+                <ModalOverlay m={0} />
+                <ModalContent m={0}>
                   <ModalHeader>Create new Post</ModalHeader>
                   <ModalCloseButton />
                   <ModalBody>

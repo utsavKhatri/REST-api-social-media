@@ -1,6 +1,6 @@
 const resolvers = {
   getAllPosts: async () => {
-    const posts = await Posts.find({}).populateAll();
+    const posts = await Posts.find({}).populateAll().sort("createdAt DESC");
     const allPosts = posts.map(async (post) => {
       const likes = await Like.find({ post: post.id }).populateAll();
       const comments = await Comment.find({ post: post.id }).populateAll();
@@ -107,7 +107,7 @@ const resolvers = {
   },
 
   getkano: ({ id }) => {
-    return id;
+    return `${id} this is id`;
   },
 };
 
