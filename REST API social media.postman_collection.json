@@ -393,7 +393,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/post/64116ccc58c13a399763574d",
+							"raw": "http://localhost:1337/post/640f0ae6d0f267758c125fb2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -401,7 +401,7 @@
 							"port": "1337",
 							"path": [
 								"post",
-								"64116ccc58c13a399763574d"
+								"640f0ae6d0f267758c125fb2"
 							]
 						}
 					},
@@ -413,7 +413,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/save/640f0a88d0f267758c125fa9",
+							"raw": "http://localhost:1337/save/6412b8feaa53311d83ce72cb",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -421,7 +421,7 @@
 							"port": "1337",
 							"path": [
 								"save",
-								"640f0a88d0f267758c125fa9"
+								"6412b8feaa53311d83ce72cb"
 							]
 						}
 					},
@@ -463,7 +463,7 @@
 							]
 						},
 						"url": {
-							"raw": "http://localhost:1337/post/share/6412b8feaa53311d83ce72cb",
+							"raw": "http://localhost:1337/post/share/64196e05ea9fdc4c33c9cb04?sharedWith=640f0a53d0f267758c125fa6",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -472,7 +472,13 @@
 							"path": [
 								"post",
 								"share",
-								"6412b8feaa53311d83ce72cb"
+								"64196e05ea9fdc4c33c9cb04"
+							],
+							"query": [
+								{
+									"key": "sharedWith",
+									"value": "640f0a53d0f267758c125fa6"
+								}
 							]
 						}
 					},
@@ -525,7 +531,7 @@
 				"bearer": [
 					{
 						"key": "token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MGYwYTUzZDBmMjY3NzU4YzEyNWZhNiIsImlhdCI6MTY3ODk1MTUwMiwiZXhwIjoxNjc4OTU4NzAyfQ.Ra4Unpd2_1KsJ7_jv2RHojhIuwUwbbh4c6vbXlUxq6M",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MTk2ZDVlZWE5ZmRjNGMzM2M5Y2IwMyIsImlhdCI6MTY3OTU3NDE3NSwiZXhwIjoxNjc5NTgxMzc1fQ.pfLOoDltSjfyLr9IGl3DJY69QaXJJYqKwvx4YQ3RZ64",
 						"type": "string"
 					}
 				]
@@ -564,23 +570,23 @@
 							"formdata": [
 								{
 									"key": "username",
-									"value": "",
+									"value": "test1234",
 									"type": "text"
 								},
 								{
 									"key": "email",
-									"value": "",
+									"value": "test1234@gmail.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "",
+									"value": "123456",
 									"type": "text"
 								},
 								{
-									"key": "profilePhoto",
+									"key": "postpic",
 									"type": "file",
-									"src": []
+									"src": "/Users/ztlab130/Downloads/wfvlbgzqes2rhrbtb0m8-Banner (wide).jpg"
 								}
 							]
 						},
@@ -608,12 +614,12 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "",
+									"value": "kano@gmail.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "",
+									"value": "123456",
 									"type": "text"
 								}
 							]
@@ -758,7 +764,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:1337/admin/users/posts/6411baa0d2830659ede5e0f6",
+							"raw": "http://localhost:1337/admin/users/posts/640f0a53d0f267758c125fa6",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -768,7 +774,7 @@
 								"admin",
 								"users",
 								"posts",
-								"6411baa0d2830659ede5e0f6"
+								"640f0a53d0f267758c125fa6"
 							]
 						}
 					},
@@ -780,7 +786,172 @@
 				"bearer": [
 					{
 						"key": "token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MGYwYTY3ZDBmMjY3NzU4YzEyNWZhOCIsImFkbWluIjp0cnVlLCJpYXQiOjE2Nzg5NDU5MDYsImV4cCI6MTY3ODk1MzEwNn0.nl76j5qfe5A2n-u7ROkf3z2V3eJeqYBqSCGRrGa0nrI",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MGYwYTY3ZDBmMjY3NzU4YzEyNWZhOCIsImFkbWluIjp0cnVlLCJpYXQiOjE2Nzk1NTk4OTEsImV4cCI6MTY3OTU2NzA5MX0.d3I30BLY7fzNYULPwFj3RcNbbEOSknS2QEp35T52q3I",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "graphql",
+			"item": [
+				{
+					"name": "get single post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n    getSinglePost(id:\"64196e05ea9fdc4c33c9cb04\"){\n        caption\n        image\n        like{\n            user{\n                username\n                email\n                isActive\n            }\n        }\n        comments{\n            text\n            user{\n                username\n            }\n        }\n        save{\n            user{\n                username\n            }\n        }\n        sharedWith{\n            shareBy{\n                username\n            }\n            sharedWith{\n                username\n            }\n        }\n    }\n}\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1337/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all user and signle user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetUser($id: ID!) {\n  getUser(id:$id){\n    id\n    username\n    email\n    profilePic\n    posts{\n      id\n    }\n    following{\n      id\n      username\n      email\n      profilePic\n    }\n    followers{\n      id\n      username\n      email\n      profilePic\n    }\n    likes{\n        id\n        post{\n            id\n            caption\n        }\n    }\n    sharedPosts{\n        id\n        post{\n            id\n            caption\n            image\n        }\n    }\n    savedposts{\n        id\n        post{\n            id\n            caption\n            image\n        }\n    }\n  }\n}",
+								"variables": "{\"id\": \"64196d5eea9fdc4c33c9cb03\"}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1337/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all posts",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n    getAllPosts{\n        id\n        caption\n        image\n        like{\n            id\n            user{\n                id\n                username\n            }\n        }\n        comments{\n            id\n            text\n            user{\n                id\n                username\n            }\n        }\n        postBy{\n            id\n            username\n        }\n        save{\n            id\n            user{\n                id\n                username\n            }\n        }\n        shares{\n            id\n        }\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1337/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "{\n    getSearchUser{\n        id\n        username\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1337/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "receivedpost",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetReceivedPost($id:ID!){\n    getReceivedPost(id:$id){\n        post{\n            id\n            caption\n            image\n        }\n        shareBy{\n            id\n            username\n            profilePic\n        }\n        sharedWith{\n            id\n            username\n            profilePic\n        }\n    }\n}",
+								"variables": "{\"id\":\"640f0a53d0f267758c125fa6\"}"
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1337/graphql",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1337",
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MTk2ZDVlZWE5ZmRjNGMzM2M5Y2IwMyIsImlhdCI6MTY3OTU3NDE3NSwiZXhwIjoxNjc5NTgxMzc1fQ.pfLOoDltSjfyLr9IGl3DJY69QaXJJYqKwvx4YQ3RZ64",
 						"type": "string"
 					}
 				]
