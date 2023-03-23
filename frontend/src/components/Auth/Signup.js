@@ -1,54 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
-import { useFormik } from "formik";
+import React, { useState } from "react";
 import {
   Box,
   Button,
-  Checkbox,
   Flex,
   FormControl,
   FormLabel,
   Input,
   VStack,
 } from "@chakra-ui/react";
-import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 // import { MyContext } from "../../context";
 
 const Signup = () => {
   const navigate = useNavigate();
-  // const navigate = useNavigate();
-  // const formik = useFormik({
-  //   initialValues: {
-  //     username: "",
-  //     email: "",
-  //     password: "",
-  //     postpic:{},
-  //   },
-  //   onSubmit: (values) => {
-  //     fetch("http://localhost:1337/signup", {
-  //       method: "POST",
-  //       body: JSON.stringify(values, null, 2),
-  //     })
-  //       .then((response) => {
-  //         if (response.status === 200) {
-  //           return response.json();
-  //         } else {
-  //           return response
-  //             .json()
-  //             .then((data) => toast.error(data.message))
-  //             .catch((err) => console.log(err));
-  //         }
-  //       })
-  //       .then((response) => {
-  //         setTimeout(() => {
-  //           navigate("/auth/login");
-  //         }, 500);
-  //       })
-  //       .catch((err) => {
-  //         console.log(err.message);
-  //       });
-  //   },
-  // });
   const [file, setFile] = useState(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -92,7 +56,6 @@ const Signup = () => {
   return (
     <>
       <Flex bg="gray.100" align="center" justify="center" h="100vh">
-        <Toaster />
         <Box bg="white" p={3} rounded="md" w={"50%"}>
           <form
             onSubmit={handleSubmit}

@@ -9,12 +9,6 @@
  * https://sailsjs.com/config/http
  */
 
-const { graphqlHTTP } = require("express-graphql");
-const resolvers = require("../graphql/resolvers");
-const schema = require("../graphql/schema");
-var bodyParser = require('body-parser');
-var skipper = require('skipper');
-
 module.exports.http = {
   /****************************************************************************
    *                                                                           *

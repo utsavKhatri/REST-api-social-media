@@ -18,6 +18,9 @@ module.exports = {
       unique: true,
       isEmail: true
     },
+    bio:{
+      type: "string",
+    },
     password: { type: "string", minLength: 6, required: true },
     profilePic: {
       type: "string",

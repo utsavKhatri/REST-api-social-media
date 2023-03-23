@@ -220,9 +220,7 @@ module.exports = {
   followingList: async (req, res) => {
     const { id } = req.user;
     try {
-      const followList = await User.findOne({ id })
-        .populate("following", { select: ["username"] })
-        .select(["username", "email"]);
+      const followList = await User.findOne({ id }).populate("following");
       if (followList.following.length < 1) {
         return res.status(404).json({ message: "Following list empty" });
       }
@@ -243,9 +241,7 @@ module.exports = {
   followersList: async (req, res) => {
     const { id } = req.user;
     try {
-      const followerList = await User.findOne({ id })
-        .populate("followers", { select: ["username"] })
-        .select(["username", "email"]);
+      const followerList = await User.findOne({ id }).populate("followers");
       if (followerList.followers.length < 1) {
         return res.status(404).json({ message: "Followers list empty" });
       }
@@ -321,7 +317,7 @@ module.exports = {
       const data = sharePostData.map((post) => {
         return { shareBy: post.shareBy.username, post: post.post };
       });
-      return res.json(data);
+      return res.status(200).json(data);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: error.message });
@@ -365,6 +361,8 @@ module.exports = {
     try {
       let profilePic;
       const id = req.user.id;
+      const postpic = req.file;
+      console.log("---------> ", postpic);
 
       if (!req.body) {
         return res
@@ -372,43 +370,23 @@ module.exports = {
           .json({ message: "enter something in given fields" });
       }
 
-      await req.file("profilePhoto").upload(
-        {
-          dirname: require("path").resolve(sails.config.appPath, "assets"),
-          maxBytes: 10000000, // 10 MB
-        },
-        async (err, uploadedFiles) => {
-          if (err) {
-            return res.serverError(err);
-          }
-          if (uploadedFiles.length === 0) {
-            return res.badRequest("No file was uploaded");
-          }
+      if (!postpic) {
+        return res
+          .status(500)
+          .json({ message: "enter something in given fields" });
+      }
 
-          profilePic = uploadedFiles[0].fd;
-
-          const result = await sails.config.custom.cloudinary.uploader.upload(
-            profilePic,
-            {
-              unique_filename: true,
-            }
-          );
-
-          // Delete image from local storage
-          fs.unlink(profilePic, (err) => {
-            if (err) {
-              return console.log(err);
-            }
-            console.log("successfully deleted");
-          });
-          const { username, email } = req.body;
-          console.log(username, email, result.secure_url);
+      let cld_upload_stream = cloudinary.uploader.upload_stream(
+        async (error, result) => {
+          console.log(error, result);
+          const { username, bio } = req.body;
+          console.log(username, bio, result.secure_url);
 
           // updat user profile
           const updatedProfile = await User.updateOne({ id: id })
             .set({
               username: username,
-              email: email,
+              bio: bio,
               profilePic: result.secure_url,
             })
             .fetch();
@@ -419,6 +397,55 @@ module.exports = {
           });
         }
       );
+      streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);
+
+      // await req.file("profilePhoto").upload(
+      //   {
+      //     dirname: require("path").resolve(sails.config.appPath, "assets"),
+      //     maxBytes: 10000000, // 10 MB
+      //   },
+      //   async (err, uploadedFiles) => {
+      //     if (err) {
+      //       return res.serverError(err);
+      //     }
+      //     if (uploadedFiles.length === 0) {
+      //       return res.badRequest("No file was uploaded");
+      //     }
+
+      //     profilePic = uploadedFiles[0].fd;
+
+      //     const result = await sails.config.custom.cloudinary.uploader.upload(
+      //       profilePic,
+      //       {
+      //         unique_filename: true,
+      //       }
+      //     );
+
+      //     // Delete image from local storage
+      //     fs.unlink(profilePic, (err) => {
+      //       if (err) {
+      //         return console.log(err);
+      //       }
+      //       console.log("successfully deleted");
+      //     });
+      //     const { username, email } = req.body;
+      //     console.log(username, email, result.secure_url);
+
+      //     // updat user profile
+      //     const updatedProfile = await User.updateOne({ id: id })
+      //       .set({
+      //         username: username,
+      //         email: email,
+      //         profilePic: result.secure_url,
+      //       })
+      //       .fetch();
+
+      //     return res.json({
+      //       message: "profile updated successfully",
+      //       data: updatedProfile,
+      //     });
+      //   }
+      // );
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: error.message });

@@ -17,7 +17,6 @@ module.exports = {
    * @returns {Object} - JSON object containing post data with user and comment details
    */
   home: async (req, res) => {
-    kjli = req.user.id;
     const { page, pageSize, searchTerm } = req.query;
     const currentPage = parseInt(page, 10) || 1;
     const itemsPerPage = parseInt(pageSize, 10) || 10;
@@ -40,26 +39,40 @@ module.exports = {
       const totalItems = await Posts.count();
       const totalPages = Math.ceil(totalItems / itemsPerPage);
 
-      const displayData = postData.map((post) => {
-        return {
-          id: post.id,
-          image: post.image,
-          caption: post.caption,
-          postBy: post.postBy,
-          likes: post.like.length,
-          saves: post.save.length,
-          shares: post.sharedWith.length,
-          comments: post.comments.map((c) => {
-            return c.text;
-          }),
-        };
+      const allPosts = postData.map(async (post) => {
+        const likes = await Like.find({ post: post.id }).populateAll();
+        const comments = await Comment.find({ post: post.id }).populateAll();
+        const savedposts = await Savedpost.find({ post: post.id }).populateAll();
+        const sharedposts = await PostShare.find({ post: post.id }).populateAll();
+        post.like = likes.map((like) => {
+          return {
+            ...like,
+          };
+        });
+        post.comments = comments.map((comment) => {
+          return {
+            ...comment,
+          };
+        });
+        post.save = savedposts.map((savedpost) => {
+          return {
+            ...savedpost,
+          };
+        });
+        post.sharedWith = sharedposts.map((sharedpost) => {
+          return {
+            ...sharedpost,
+          };
+        });
+        return post;
       });
+      const data = await Promise.all(allPosts);
       res.json({
         currentPage,
         itemsPerPage,
         totalPages,
         totalItems,
-        displayData,
+        data,
       });
     } catch (error) {
       console.error(error);

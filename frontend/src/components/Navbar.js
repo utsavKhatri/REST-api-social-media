@@ -192,8 +192,10 @@ export default function Navbar() {
                   <br />
                   <MenuDivider />
                   <Link to={"/profile"}>
-                    {" "}
                     <MenuItem>Your profile</MenuItem>
+                  </Link>
+                  <Link to={"/receive-post"}>
+                    <MenuItem>Shared posts</MenuItem>
                   </Link>
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 </MenuList>

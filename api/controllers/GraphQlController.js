@@ -15,4 +15,14 @@ module.exports = {
     rootValue: resolvers,
     graphiql: true,
   })
+  // graphql: () => {
+  //   return graphqlHTTP((req) => {
+  //     return {
+  //       schema: schema,
+  //       rootValue: resolvers,
+  //       context: { req: req },
+  //       graphiql: true,
+  //     }; // Enable GraphiQL UI for testing
+  //   });
+  // },
 };

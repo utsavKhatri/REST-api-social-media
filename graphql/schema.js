@@ -26,6 +26,7 @@ type Comment {
 }
 type PostShare {
   id:ID!
+  post: Posts!
   shareBy: User!
   sharedWith: User!
 }
@@ -47,24 +48,25 @@ type Savedpost {
     posts: [Posts]!
     comments: [Comment]!
     likes: [Like]!
-    savedPosts: [Savedpost]!
+    savedposts: [Savedpost]!
     sharedPosts: [PostShare]!
     followers: [User]!
     following: [User]!
     isAdmin: Boolean!
     isActive: Boolean!
     token: String!
+    bio: String
   }
 
 
   type Query {
-    getAllPosts: [Posts!]!
+    getAllPosts(userid:ID): [Posts!]!
     getUser(id: ID!): User!
-    getAllUsers: [User!]!
+    getAllUsers(search:String): [User!]!
     getSinglePost(id: ID!): Posts!
     getUserLike(id: ID!): [Like!]!
     getCommentlist(id: ID!): [Comment!]!
-    getkano(id:ID!):String
+    getReceivedPost(id: ID!): [PostShare!]!
   }
 
 `);

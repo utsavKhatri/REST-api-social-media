@@ -1,6 +1,10 @@
 const resolvers = {
-  getAllPosts: async () => {
-    const posts = await Posts.find({}).populateAll().sort("createdAt DESC");
+  getAllPosts: async ({userid}) => {
+    let search = {};
+    if (userid) {
+      search = { postBy: userid };
+    }
+    const posts = await Posts.find(search).populateAll().sort("createdAt DESC");
     const allPosts = posts.map(async (post) => {
       const likes = await Like.find({ post: post.id }).populateAll();
       const comments = await Comment.find({ post: post.id }).populateAll();
@@ -57,7 +61,7 @@ const resolvers = {
         ...savedpost,
       };
     });
-    user.sharedposts = sharedposts.map((sharedpost) => {
+    user.sharedPosts = sharedposts.map((sharedpost) => {
       return {
         ...sharedpost,
       };
@@ -101,14 +105,28 @@ const resolvers = {
     });
     return post;
   },
-  getAllUsers: async () => {
-    const users = await User.find({}).populateAll();
+  getAllUsers: async ({search}) => {
+    let searchQuery = {};
+    if (search) {
+      searchQuery = {
+        or: [
+          { username: { contains: search } },
+          { email: { contains: search } },
+        ],
+      };
+    }
+
+    const users = await User.find(searchQuery).populateAll().meta({
+      makeLikeModifierCaseInsensitive: true,
+    });
     return users;
   },
-
-  getkano: ({ id }) => {
-    return `${id} this is id`;
-  },
+  getReceivedPost: async ({id}) => {
+    const data = await PostShare.find({
+      sharedWith: id,
+    }).populateAll();
+    return data;
+  }
 };
 
 module.exports = resolvers;
