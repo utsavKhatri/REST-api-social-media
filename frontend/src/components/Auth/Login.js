@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { useFormik } from "formik";
 import {
   Box,
@@ -7,16 +7,15 @@ import {
   FormControl,
   FormLabel,
   Input,
+  useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
 import toast, { Toaster } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { MyContext } from "../../context";
-// import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const { setIsLoggedIn } = useContext(MyContext);
-
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
@@ -61,9 +60,9 @@ const Login = () => {
 
   return (
     <>
-      <Flex bg="gray.100" align="center" justify="center" h="100vh">
+      <Flex bg={useColorModeValue("white.100", "gray.600")} align="center" justify="center" h="100vh">
         <Toaster />
-        <Box bg="white" p={3} rounded="md" w={"50%"}>
+        <Box bg={useColorModeValue("white.100", "gray.900")} p={3} rounded="md" w={"50%"}>
           <form onSubmit={formik.handleSubmit}>
             <VStack spacing={4} align="flex-start">
               <FormControl>
@@ -72,6 +71,8 @@ const Login = () => {
                   id="email"
                   name="email"
                   type="email"
+                  focusBorderColor="green.400"
+                  placeholder="enter email"
                   variant="filled"
                   onChange={formik.handleChange}
                   value={formik.values.email}
@@ -83,12 +84,18 @@ const Login = () => {
                   id="password"
                   name="password"
                   type="password"
+                  focusBorderColor="green.400"
+                  placeholder="enter password"
                   variant="filled"
                   onChange={formik.handleChange}
                   value={formik.values.password}
                 />
               </FormControl>
+              <VStack spacing={4} align="flex-start">
               <Link to={"/signup"}>Register account</Link>
+              <Link to={"/forgot-password"}>Forgot password?</Link>
+
+              </VStack>
               <Button type="submit" colorScheme="purple" width="full">
                 Login
               </Button>

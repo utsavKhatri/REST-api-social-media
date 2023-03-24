@@ -1,8 +1,7 @@
-import { Box, VStack } from "@chakra-ui/react";
-import axios from "axios";
-import React, { useContext, useEffect, useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Box, Flex, VStack } from "@chakra-ui/react";
+import React, { useContext, useEffect } from "react";
+import { Container } from "react-bootstrap";
+import { InfinitySpin } from "react-loader-spinner";
 
 import { MyContext } from "../context";
 
@@ -27,7 +26,9 @@ const Home = () => {
               </Box>
             ))
           ) : (
-            <div>Loading...</div>
+            <Flex justifyContent={"center"} alignItems={"center"} w={"100%"}>
+              <InfinitySpin width="200" color="#bddff2" />
+            </Flex>
           )}
         </VStack>
       </Container>

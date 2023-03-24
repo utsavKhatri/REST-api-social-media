@@ -6,6 +6,7 @@ import {
   FormControl,
   FormLabel,
   Input,
+  useColorModeValue,
   VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
@@ -54,8 +55,8 @@ const Signup = () => {
   };
   return (
     <>
-      <Flex bg="gray.100" align="center" justify="center" h="100vh">
-        <Box bg="white" p={3} rounded="md" w={"50%"}>
+      <Flex bg={useColorModeValue("white.100", "gray.600")} align="center" justify="center" h="100vh">
+        <Box bg={useColorModeValue("white.100", "gray.900")} p={3} rounded="md" w={"50%"}>
           <form
             onSubmit={handleSubmit}
           >
@@ -66,6 +67,8 @@ const Signup = () => {
                   id="username"
                   name="username"
                   type="text"
+                  placeholder="enter username"
+                  focusBorderColor="green.400"
                   variant="filled"
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -75,6 +78,8 @@ const Signup = () => {
                 <Input
                   id="email"
                   name="email"
+                  focusBorderColor="green.400"
+                  placeholder="enter email"
                   type="email"
                   onChange={(e) => setEmail(e.target.value)}
                   variant="filled"
@@ -85,6 +90,8 @@ const Signup = () => {
                 <Input
                   id="password"
                   name="password"
+                  focusBorderColor="green.400"
+                  placeholder="enter password"
                   type="password"
                   variant="filled"
                   onChange={(e) => setPass(e.target.value)}
@@ -95,6 +102,7 @@ const Signup = () => {
                 <Input
                   id="postpic"
                   name="postpic"
+                  focusBorderColor="green.400"
                   type="file"
                   variant={"unstyled"}
                   onChange={handleFileChange}

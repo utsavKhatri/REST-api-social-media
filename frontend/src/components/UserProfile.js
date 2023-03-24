@@ -36,6 +36,7 @@ import { MyContext } from "../context";
 import { CiShare1 } from "react-icons/ci";
 import { toast, Toaster } from "react-hot-toast";
 import NormalPostCard from "./NormalPostCard";
+import { InfinitySpin } from "react-loader-spinner";
 
 const UserProfile = () => {
   const userData = JSON.parse(localStorage.getItem("user-profile"));
@@ -312,9 +313,14 @@ const UserProfile = () => {
                         My Following
                       </Heading>
                       <Row>
-                        {profile.following.length > 0 ?
-                          (profile.following.map((user) => (
-                            <Col xs={12} md={4} key={user.id}  justifyContent={"center"}>
+                        {profile.following.length > 0 ? (
+                          profile.following.map((user) => (
+                            <Col
+                              xs={12}
+                              md={4}
+                              key={user.id}
+                              justifyContent={"center"}
+                            >
                               <Card maxW={"md"} m={3} key={user.id}>
                                 <Stack
                                   direction={"row"}
@@ -345,7 +351,8 @@ const UserProfile = () => {
                                 </Stack>
                               </Card>
                             </Col>
-                        ))):(
+                          ))
+                        ) : (
                           <div>No following</div>
                         )}
                       </Row>
@@ -355,9 +362,14 @@ const UserProfile = () => {
                         My Followers
                       </Heading>
                       <Row>
-                        {profile.followers.length > 0 ?
-                          (profile.followers.map((user) => (
-                            <Col xs={12} md={4} key={user.id}  justifyContent={"center"}>
+                        {profile.followers.length > 0 ? (
+                          profile.followers.map((user) => (
+                            <Col
+                              xs={12}
+                              md={4}
+                              key={user.id}
+                              justifyContent={"center"}
+                            >
                               <Card maxW={"md"} m={3} key={user.id}>
                                 <Stack
                                   direction={"row"}
@@ -387,9 +399,10 @@ const UserProfile = () => {
                                 </Stack>
                               </Card>
                             </Col>
-                          ))):(
+                          ))
+                        ) : (
                           <div>No followers</div>
-                          )}
+                        )}
                       </Row>
                     </Stack>
 
@@ -398,14 +411,20 @@ const UserProfile = () => {
                         My Posts
                       </Heading>
                       <Row>
-                        {profile.posts.length > 0 ?
-                          (profile.posts.map((post) => (
-                            <Col xs={12} md={4} key={post.id} justifyContent={"center"}>
-                              <NormalPostCard post={post}/>
+                        {profile.posts.length > 0 ? (
+                          profile.posts.map((post) => (
+                            <Col
+                              xs={12}
+                              md={4}
+                              key={post.id}
+                              justifyContent={"center"}
+                            >
+                              <NormalPostCard post={post} />
                             </Col>
-                          ))):(
+                          ))
+                        ) : (
                           <div>No posts</div>
-                          )}
+                        )}
                       </Row>
                     </Stack>
 
@@ -414,14 +433,20 @@ const UserProfile = () => {
                         My Savedpost
                       </Heading>
                       <Row>
-                        {profile.savedposts.length > 0 ?
-                          (profile.savedposts.map((post) => (
-                            <Col xs={12} md={4} key={post.post.id}  justifyContent={"center"}>
-                              <NormalPostCard post={post.post}/>
+                        {profile.savedposts.length > 0 ? (
+                          profile.savedposts.map((post) => (
+                            <Col
+                              xs={12}
+                              md={4}
+                              key={post.post.id}
+                              justifyContent={"center"}
+                            >
+                              <NormalPostCard post={post.post} />
                             </Col>
-                          ))):(
+                          ))
+                        ) : (
                           <div>No posts</div>
-                          )}
+                        )}
                       </Row>
                     </Stack>
 
@@ -430,9 +455,14 @@ const UserProfile = () => {
                         My Comments
                       </Heading>
                       <Row>
-                        {profile.comments.length > 0 ?
-                          (profile.comments.map((comment) => (
-                            <Col xs={12} md={4} key={comment.id}  justifyContent={"center"}>
+                        {profile.comments.length > 0 ? (
+                          profile.comments.map((comment) => (
+                            <Col
+                              xs={12}
+                              md={4}
+                              key={comment.id}
+                              justifyContent={"center"}
+                            >
                               <Card m={3} key={comment.id}>
                                 <CardHeader>
                                   <Heading size="md">{comment.text}</Heading>
@@ -455,9 +485,10 @@ const UserProfile = () => {
                                 </CardBody>
                               </Card>
                             </Col>
-                          ))):(
+                          ))
+                        ) : (
                           <div>No comments</div>
-                          )}
+                        )}
                       </Row>
                     </Stack>
                   </Col>
@@ -466,7 +497,9 @@ const UserProfile = () => {
             </Box>
           </VStack>
         ) : (
-          <div>Loading...</div>
+          <Flex justifyContent={"center"} alignItems={"center"} w={"100%"}>
+            <InfinitySpin width="200" color="#bddff2" />
+          </Flex>
         )}
       </Center>
     </>

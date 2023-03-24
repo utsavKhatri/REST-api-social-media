@@ -9,6 +9,7 @@ import Login from "./components/Auth/Login";
 import Signup from "./components/Auth/Signup";
 import FollowCard from "./components/FollowCard";
 import ReceivePost from "./components/ReceivePost";
+import ForgotPassword from "./components/Auth/ForgotPassword";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         </Route>
         <Route path="/login" element={<Login />} exact/>
         <Route path="/signup" element={<Signup />} exact/>
+        <Route path="/forgot-password" element={<ForgotPassword />} exact/>
       </Routes>
     </BrowserRouter>
   );

@@ -30,13 +30,14 @@ import {
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { MyContext } from "../context";
+import { toast, Toaster } from "react-hot-toast";
 
 export default function Navbar() {
   // const {  } = useContext(MyContext);
   const userData = JSON.parse(localStorage.getItem("user-profile"));
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const{ reFetchData} = useContext(MyContext);
+  const { reFetchData } = useContext(MyContext);
   const [file, setFile] = useState(null);
 
   const [caption, setCaption] = useState("");
@@ -51,9 +52,8 @@ export default function Navbar() {
     })
       .then((response) => {
         if (response.status === 200) {
-          localStorage.clear();
           navigate("/login");
-          localStorage.setItem("chakra-ui-color-mode", "light");
+          localStorage.clear();
           return alert("logout successfully");
         }
       })
@@ -96,6 +96,7 @@ export default function Navbar() {
 
   return (
     <>
+      <Toaster />
       <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <Box>
@@ -140,6 +141,7 @@ export default function Navbar() {
                             id="postpic"
                             name="postpic"
                             type="file"
+                            focusBorderColor="green.400"
                             variant="unstyled"
                             onChange={handleFileChange}
                           />
