@@ -84,13 +84,6 @@ const PostCard = ({ post, reFetchData }) => {
       .then((response) => {
         if (response.status === 200) {
           console.log(response.data);
-          setIsLiked(!isLiked);
-          if (isLiked) {
-            toast.success("dislike");
-          } else {
-            toast.success("liked");
-          }
-          navigate("/");
           reFetchData();
         } else {
           toast.error("something went wrong");
@@ -113,13 +106,6 @@ const PostCard = ({ post, reFetchData }) => {
       .then((response) => {
         if (response.status === 200) {
           console.log(response.data);
-          setSaved(!saved);
-          if (saved) {
-            toast.success("saved");
-          } else {
-            toast.success("un saved");
-          }
-          navigate("/");
           reFetchData();
         } else {
           toast.error("something went wrong");
