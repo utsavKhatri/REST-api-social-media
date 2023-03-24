@@ -311,6 +311,8 @@ module.exports = {
       if (isValidUser.postBy === req.user.id) {
         const deletedLike = await Like.destroy({ post: id });
         const deletedComment = await Comment.destroy({ post: id });
+        const savedPost = await Savedpost.destroy({ post: id });
+        const deletedPostShare = await PostShare.destroy({ post: id });
         const deletedPost = await Posts.destroy({ id: id });
         return res.json({ message: "Post deleted successfully." });
       }
