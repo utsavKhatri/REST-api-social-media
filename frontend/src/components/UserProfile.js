@@ -205,6 +205,12 @@ const UserProfile = () => {
                       Followers
                     </Text>
                   </Stack>
+                  <Stack spacing={0} align={"center"}>
+                    <Text fontWeight={600}>{profile.posts.length}</Text>
+                    <Text fontSize={"sm"} color={"gray.500"}>
+                      Posts
+                    </Text>
+                  </Stack>
                 </Stack>
 
                 <Button
