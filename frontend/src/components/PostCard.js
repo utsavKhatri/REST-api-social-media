@@ -1,7 +1,6 @@
 import {
   Box,
   Center,
-  useColorModeValue,
   Heading,
   Text,
   Stack,
@@ -19,23 +18,27 @@ import {
   Card,
   CardHeader,
   CardBody,
+  CardFooter,
+  IconButton,
+  Flex,
+  PopoverContent,
+  PopoverArrow,
+  PopoverBody,
+  PopoverTrigger,
+  Popover,
+  Hide,
 } from "@chakra-ui/react";
-import { AiFillHeart, AiFillDelete } from "react-icons/ai";
-import { FaShare } from "react-icons/fa";
-import { BsFillBookmarkFill, BsFillShareFill } from "react-icons/bs";
-import { useState } from "react";
+import { AiFillHeart, AiFillDelete, AiOutlineHeart } from "react-icons/ai";
+import { FaBookmark, FaRegBookmark, FaShare } from "react-icons/fa";
+import { BsFillShareFill, BsThreeDotsVertical } from "react-icons/bs";
 
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-
 import CommentCard from "./CommentCard";
-
-//   const IMAGE =
-//     'https://images.unsplash.com/photo-1518051870910-a46e30d9db16?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1350&q=80';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const PostCard = ({ post, reFetchData }) => {
-  // const { userData } = useContext(MyContext);
   const userData = JSON.parse(localStorage.getItem("user-profile"));
   const [isLiked, setIsLiked] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -127,18 +130,17 @@ const PostCard = ({ post, reFetchData }) => {
       });
   };
 
-  const optionsFetcjUser = {
-    url: "http://localhost:1337/graphql",
-    method: "post",
-    headers: {
-      Authorization: `Bearer ${userData.token}`,
-    },
-    data: {
-      query: "{getAllUsers{    id  username profilePic  }}",
-    },
-  };
-
   const fetchUserlist = () => {
+    const optionsFetcjUser = {
+      url: "http://localhost:1337/graphql",
+      method: "post",
+      headers: {
+        Authorization: `Bearer ${userData.token}`,
+      },
+      data: {
+        query: "{getAllUsers{    id  username profilePic  }}",
+      },
+    };
     onOpen();
     axios
       .request(optionsFetcjUser)
@@ -150,6 +152,7 @@ const PostCard = ({ post, reFetchData }) => {
         console.error(error);
       });
   };
+
   const handleSharePost = (usId) => {
     const options = {
       method: "POST",
@@ -179,9 +182,9 @@ const PostCard = ({ post, reFetchData }) => {
   };
 
   return (
-    <Center py={12}>
+    <Center py={10}>
       <Toaster />
-      <Box
+      {/* <Box
         role={"group"}
         p={6}
         maxW={"330px"}
@@ -346,7 +349,169 @@ const PostCard = ({ post, reFetchData }) => {
             <CommentCard post={post} reFetchData={reFetchData} />
           </Stack>
         </Stack>
-      </Box>
+      </Box> */}
+
+      <Card maxW="md">
+        <CardHeader>
+          <Flex spacing="4">
+            <Flex flex="1" gap="4" alignItems="center" flexWrap="nowarp">
+              <Link
+                to={
+                  post.postBy.id !== userData.id
+                    ? `/follow/${post.postBy.id}`
+                    : "/profile"
+                }
+              >
+                <Avatar name="Segun Adebayo" src={post.postBy.profilePic} />
+              </Link>
+
+              <Box>
+                <Link
+                  to={
+                    post.postBy.id !== userData.id
+                      ? `/follow/${post.postBy.id}`
+                      : "/profile"
+                  }
+                >
+                  <Heading size="sm">{post.postBy.username}</Heading>
+                </Link>
+                <Hide below="md">
+                  <Text>{post.postBy.bio}</Text>
+                </Hide>
+              </Box>
+            </Flex>
+            <Popover placement="bottom" isLazy>
+              <PopoverTrigger>
+                <IconButton
+                  aria-label="More server options"
+                  icon={<BsThreeDotsVertical />}
+                  variant="ghost"
+                  w="fit-content"
+                />
+              </PopoverTrigger>
+              {userData.id === post.postBy.id && (
+                <PopoverContent w="fit-content" _focus={{ boxShadow: "none" }}>
+                  <PopoverArrow />
+                  <PopoverBody>
+                    <Stack>
+                      <Button
+                        variant={"unstyled"}
+                        color={"red"}
+                        onClick={handleDelete}
+                        leftIcon={<AiFillDelete color="red" />}
+                      >
+                        Delete post
+                      </Button>
+                    </Stack>
+                  </PopoverBody>
+                </PopoverContent>
+              )}
+            </Popover>
+          </Flex>
+        </CardHeader>
+        <CardBody>
+          <Text>{post.caption}</Text>
+        </CardBody>
+
+        {post.image !== "" && (
+          <Image objectFit="cover" src={post.image} alt="Chakra UI" />
+        )}
+
+        <CardFooter justify="space-between" flexWrap="wrap">
+          <Stack direction="row" align="center" w={"100%"}>
+            <Button
+              flex="1"
+              onClick={handleLike}
+              variant="ghost"
+              leftIcon={
+                post.like.some((us) => us.user.id === userData.id) ? (
+                  <AiFillHeart color="red" />
+                ) : (
+                  <AiOutlineHeart />
+                )
+              }
+            >
+              {post.like.length}
+            </Button>
+            <Button
+              flex="1"
+              variant="ghost"
+              onClick={fetchUserlist}
+              leftIcon={<FaShare />}
+            >
+              {post.sharedWith.length}
+            </Button>
+            <Modal onClose={onClose} isOpen={isOpen} isCentered>
+              <ModalOverlay />
+              <ModalContent>
+                <ModalHeader>Modal Title</ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  <Stack spacing="4">
+                    {userList &&
+                      userList.map((us) => (
+                        <Card key={us.id} size={"sm"}>
+                          <CardBody
+                            sx={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Heading
+                              size="sm"
+                              sx={{
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "10px",
+                              }}
+                            >
+                              <Avatar size={"sm"} src={us.profilePic} />
+                              {us.username}
+                            </Heading>
+                            <div>
+                              <Button
+                                flex="1"
+                                variant="ghost"
+                                onClick={() => handleSharePost(us.id)}
+                                leftIcon={<BsFillShareFill />}
+                              >
+                                Share
+                              </Button>
+                            </div>
+                          </CardBody>
+                        </Card>
+                      ))}
+                  </Stack>
+                </ModalBody>
+                <ModalFooter>
+                  <Button onClick={onClose}>Close</Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
+            <Button
+              flex="1"
+              variant="ghost"
+              onClick={handleSave}
+              leftIcon={
+                post.save.some((us) => us.user.id === userData.id) ? (
+                  <FaBookmark />
+                ) : (
+                  <FaRegBookmark />
+                )
+              }
+            >
+              {post.save.length}
+            </Button>
+          </Stack>
+          <Stack w={"100%"}>
+            <CommentCard post={post} reFetchData={reFetchData} />
+          </Stack>
+        </CardFooter>
+      </Card>
     </Center>
   );
 };

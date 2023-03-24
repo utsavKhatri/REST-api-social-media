@@ -38,7 +38,6 @@ export default function FollowCard() {
   };
 
   useEffect(() => {
-    console.log("kjsadhkajshd", id);
     setTimeout(() => {
       axios
         .request(options)

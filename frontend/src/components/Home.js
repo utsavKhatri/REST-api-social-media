@@ -1,3 +1,4 @@
+import { Box, VStack } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
@@ -8,33 +9,27 @@ import { MyContext } from "../context";
 import PostCard from "./PostCard";
 
 const Home = () => {
-  const { refresh,reFetchData, setRefresh, feedData } = useContext(MyContext);
-  const userData = JSON.parse(localStorage.getItem("user-profile"));
-
-
-
-
+  const { reFetchData, feedData } = useContext(MyContext);
 
   useEffect(() => {
-    
     reFetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <React.Fragment>
       <Container className="py-5">
-        <Row>
+        <VStack>
           {feedData !== undefined ? (
             feedData.map((post) => (
-              <Col xs={12} md={4} key={post.id+2}>
+              <Box md={4} key={post.id + 2}>
                 <PostCard key={post.id} post={post} reFetchData={reFetchData} />
-              </Col>
+              </Box>
             ))
           ) : (
             <div>Loading...</div>
           )}
-        </Row>
+        </VStack>
       </Container>
     </React.Fragment>
   );

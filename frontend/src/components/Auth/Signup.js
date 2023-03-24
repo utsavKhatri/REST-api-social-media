@@ -31,7 +31,6 @@ const Signup = () => {
     formData.append("password", password);
     formData.append("postpic", file);
 
-    console.log(...formData);
     fetch("http://localhost:1337/signup", {
       method: "POST",
       body: formData,

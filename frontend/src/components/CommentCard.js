@@ -12,13 +12,10 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import axios from "axios";
-import React, { useContext, useState } from "react";
+import React, {  useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import { MyContext } from "../context";
 
 const CommentCard = ({ post, reFetchData }) => {
-  const { refresh, setRefresh } = useContext(MyContext);
   const [commenttext, setCommenttext] = useState();
   const userData = JSON.parse(localStorage.getItem("user-profile"));
 
@@ -26,17 +23,6 @@ const CommentCard = ({ post, reFetchData }) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("text", commenttext);
-    console.log("cmmet txt", commenttext);
-
-    console.log("from data ", ...formData);
-    // const options = {
-    //   method: "POST",
-    //   url: `http://localhost:1337/comment/${post.id}`,
-    //   headers: {
-    //     Authorization: `Bearer ${userData.token}`,
-    //   },
-    //   body: formData,
-    // };
     fetch(`http://localhost:1337/comment/${post.id}`, {
       method: "POST",
       body: formData,
@@ -61,7 +47,13 @@ const CommentCard = ({ post, reFetchData }) => {
     <Accordion allowToggle>
       <AccordionItem>
         <h2>
-          <AccordionButton>
+          <AccordionButton sx={{
+            outline: "none",
+            borderBlock: "none",
+            _hover: {
+              bg: "blue.50",
+            }
+          }}>
             <Box as="span" flex="1" textAlign="left">
               {post.comments.length} Comments...
             </Box>
@@ -71,7 +63,7 @@ const CommentCard = ({ post, reFetchData }) => {
 
         <AccordionPanel>
           <form>
-            <FormControl id="email" className="d-flex">
+            <FormControl id="email" className="d-flex gap-2">
               <Input
                 type="text"
                 placeholder="enter comment here"

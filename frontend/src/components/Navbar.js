@@ -77,7 +77,6 @@ export default function Navbar() {
       formData.append("caption", caption);
     }
 
-    console.log(JSON.stringify(...formData));
     fetch("http://localhost:1337/create-post", {
       method: "POST",
       body: formData,

@@ -82,7 +82,6 @@ const UserProfile = () => {
       formData.append("bio", bio);
     }
 
-    console.log(JSON.stringify(...formData));
     fetch("http://localhost:1337/profile", {
       method: "POST",
       body: formData,
