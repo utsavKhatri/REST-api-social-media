@@ -42,8 +42,12 @@ module.exports = {
       const allPosts = postData.map(async (post) => {
         const likes = await Like.find({ post: post.id }).populateAll();
         const comments = await Comment.find({ post: post.id }).populateAll();
-        const savedposts = await Savedpost.find({ post: post.id }).populateAll();
-        const sharedposts = await PostShare.find({ post: post.id }).populateAll();
+        const savedposts = await Savedpost.find({
+          post: post.id,
+        }).populateAll();
+        const sharedposts = await PostShare.find({
+          post: post.id,
+        }).populateAll();
         post.like = likes.map((like) => {
           return {
             ...like,
@@ -312,6 +316,9 @@ module.exports = {
         const deletedLike = await Like.destroy({ post: id });
         const deletedComment = await Comment.destroy({ post: id });
         const deletedPost = await Posts.destroy({ id: id });
+        const savedpost = await Savedpost.destroy({
+          and: [{ user: req.user.id }, { post: id }],
+        });
         return res.json({ message: "Post deleted successfully." });
       }
       return res.json({
@@ -404,7 +411,9 @@ module.exports = {
       await Posts.addToCollection(postId, "comments", comment.id);
       const newData = await Posts.find({ id: postId }).populate("comments");
 
-      return res.status(200).json({ message:"comment success", commentedData: newData });
+      return res
+        .status(200)
+        .json({ message: "comment success", commentedData: newData });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
