@@ -8,6 +8,11 @@
  * For more information on configuration, check out:
  * https://sailsjs.com/config/http
  */
+// const express = require('express');
+// const app = express();
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+
 
 module.exports.http = {
   /****************************************************************************
@@ -50,10 +55,11 @@ module.exports.http = {
 
     bodyParser: (function () {
       const bodyParser = require("body-parser");
-      bodyParser.json();
-      bodyParser.urlencoded({ extended: true });
-      return bodyParser();
+      const jsonParser = bodyParser.json();
+      const urlencodedParser = bodyParser.urlencoded({ extended: true });
+      return [jsonParser, urlencodedParser];
     })(),
+
     fileMiddleware: (function () {
       const multer = require("multer");
       const upload = multer();
