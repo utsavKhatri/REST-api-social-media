@@ -21,14 +21,15 @@ describe("PostsController", () => {
       .field("email", "test4@test.com")
       .field("password", "password")
       .field("username", "test4")
-      .attach("profilePhoto", __dirname + "/test.jpg")
+      .attach("postpic", __dirname + "/test.jpg")
       .expect(200, done);
   });
   describe("GET /login", () => {
     it("should return 200 and a JWT token", (done) => {
       request(sails.hooks.http.app)
         .post("/login")
-        .send({ email: "test4@test.com", password: "password" })
+        .field("email", "test4@test.com")
+        .field("password", "password")
         .expect(200)
         .end((err, res) => {
           if (err) {
@@ -91,7 +92,7 @@ describe("PostsController", () => {
     it("POST /comment/:postId, comment on the post", (done) => {
       request(sails.hooks.http.app)
         .post(`/comment/${testPost.id}`)
-        .send({ text: "test comment" })
+        .field("text", "test comment")
         .set("Authorization", `Bearer ${token}`)
         .expect(200, done);
     });

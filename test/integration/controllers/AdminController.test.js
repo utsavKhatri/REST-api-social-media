@@ -17,7 +17,8 @@ describe("AdminController", () => {
       }; // assuming this user exists and is an admin
       request(sails.hooks.http.app)
         .post("/login")
-        .send(adminUser)
+        .field("email", "admin@gmail.com")
+        .field("password", "admin123")
         .expect(200)
         .end((err, res) => {
           if (err) {
@@ -48,13 +49,10 @@ describe("AdminController", () => {
     var userId;
     var token;
     before((done) => {
-      const adminUser = {
-        email: "admin@gmail.com",
-        password: "admin123",
-      }; // assuming this user exists and is an admin
       request(sails.hooks.http.app)
         .post("/login")
-        .send(adminUser)
+        .field("email", "admin@gmail.com")
+        .field("password", "admin123")
         .expect(200)
         .end((err, res) => {
           if (err) {
@@ -72,7 +70,7 @@ describe("AdminController", () => {
         .field("email", "test3@test.com")
         .field("password", "password")
         .field("username", "test3")
-        .attach("profilePhoto", __dirname + "/test.jpg")
+        .attach("postpic", __dirname + "/test.jpg")
         .expect(200)
         .end((err, res) => {
           if (err) {
@@ -116,7 +114,7 @@ describe("AdminController", () => {
         .field("email", "test6@test.com")
         .field("password", "password")
         .field("username", "test6")
-        .attach("profilePhoto", __dirname + "/test.jpg")
+        .attach("postpic", __dirname + "/test.jpg")
         .end((err, res) => {
           if (err) {
             return done(err);

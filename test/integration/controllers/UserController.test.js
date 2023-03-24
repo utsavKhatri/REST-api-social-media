@@ -14,7 +14,7 @@ describe("UserController", () => {
     it("should return 400 if email or password is missing", (done) => {
       request(sails.hooks.http.app)
         .post("/signup")
-        .send({})
+        .send()
         .expect(500)
         .end((err, res) => {
           if (err) {
@@ -31,7 +31,7 @@ describe("UserController", () => {
         .field("email", "test@test.com")
         .field("password", "password")
         .field("username", "test")
-        .attach("profilePhoto", __dirname + "/test.jpg")
+        .attach("postpic", __dirname + "/test.jpg")
         .expect(200)
         .end((err, res) => {
           if (err) {
@@ -48,7 +48,7 @@ describe("UserController", () => {
         .field("email", "test@test.com")
         .field("password", "password")
         .field("username", "test1")
-        .attach("profilePhoto", __dirname + "/test.jpg")
+        .attach("postpic", __dirname + "/test.jpg")
         .expect(409)
         .end((err, res) => {
           if (err) {
@@ -65,7 +65,7 @@ describe("UserController", () => {
     it("should return 400 if email or password is missing", (done) => {
       request(sails.hooks.http.app)
         .post("/login")
-        .send({})
+        .send()
         .expect(400)
         .end((err, res) => {
           if (err) {
@@ -83,7 +83,8 @@ describe("UserController", () => {
       }; // assuming this user exists but has an invalid password
       request(sails.hooks.http.app)
         .post("/login")
-        .send(invalidPasswordUser)
+        .field("email", "test@test.com")
+        .field("password", "admin121")
         .expect(400)
         .end((err, res) => {
           if (err) {
@@ -178,7 +179,7 @@ describe("UserController", () => {
         .field("email", "test2@test.com")
         .field("password", "password")
         .field("username", "test2")
-        .attach("profilePhoto", __dirname + "/test.jpg")
+        .attach("postpic", __dirname + "/test.jpg")
         .expect(200)
         .end((err, res) => {
           if (err) {
