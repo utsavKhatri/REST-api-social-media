@@ -46,7 +46,25 @@ Go to the project directory
 Install dependencies
 
 ```bash
-  npm install
+  npm install --force
+```
+
+Start the server
+
+```bash
+  npm start
+```
+
+Go to frontend directory
+
+```bash
+  cd frontend
+```
+
+Install dependencies
+
+```bash
+  npm install --legacy-peer-dev
 ```
 
 Start the server
