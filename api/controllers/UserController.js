@@ -371,9 +371,21 @@ module.exports = {
       }
 
       if (!postpic) {
-        return res
-          .status(500)
-          .json({ message: "enter something in given fields" });
+        const { username, bio } = req.body;
+        console.log(username, bio);
+
+        // updat user profile
+        const updatedProfile = await User.updateOne({ id: id })
+          .set({
+            username: username,
+            bio: bio,
+          })
+          .fetch();
+
+        return res.json({
+          message: "profile updated successfully",
+          data: updatedProfile,
+        });
       }
 
       let cld_upload_stream = cloudinary.uploader.upload_stream(
@@ -399,53 +411,6 @@ module.exports = {
       );
       streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);
 
-      // await req.file("profilePhoto").upload(
-      //   {
-      //     dirname: require("path").resolve(sails.config.appPath, "assets"),
-      //     maxBytes: 10000000, // 10 MB
-      //   },
-      //   async (err, uploadedFiles) => {
-      //     if (err) {
-      //       return res.serverError(err);
-      //     }
-      //     if (uploadedFiles.length === 0) {
-      //       return res.badRequest("No file was uploaded");
-      //     }
-
-      //     profilePic = uploadedFiles[0].fd;
-
-      //     const result = await sails.config.custom.cloudinary.uploader.upload(
-      //       profilePic,
-      //       {
-      //         unique_filename: true,
-      //       }
-      //     );
-
-      //     // Delete image from local storage
-      //     fs.unlink(profilePic, (err) => {
-      //       if (err) {
-      //         return console.log(err);
-      //       }
-      //       console.log("successfully deleted");
-      //     });
-      //     const { username, email } = req.body;
-      //     console.log(username, email, result.secure_url);
-
-      //     // updat user profile
-      //     const updatedProfile = await User.updateOne({ id: id })
-      //       .set({
-      //         username: username,
-      //         email: email,
-      //         profilePic: result.secure_url,
-      //       })
-      //       .fetch();
-
-      //     return res.json({
-      //       message: "profile updated successfully",
-      //       data: updatedProfile,
-      //     });
-      //   }
-      // );
     } catch (error) {
       console.log(error);
       return res.status(500).json({ message: error.message });

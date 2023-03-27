@@ -30,19 +30,17 @@ import {
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { MyContext } from "../context";
-import { toast, Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 export default function Navbar() {
-  // const {  } = useContext(MyContext);
   const userData = JSON.parse(localStorage.getItem("user-profile"));
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { reFetchData } = useContext(MyContext);
+  const { refetch } = useContext(MyContext);
   const [file, setFile] = useState(null);
-
+  const navigate = useNavigate();
   const [caption, setCaption] = useState("");
 
-  const navigate = useNavigate();
   const handleLogout = () => {
     fetch("http://localhost:1337/logout", {
       method: "POST",
@@ -85,7 +83,7 @@ export default function Navbar() {
       .then((response) => response.json())
       .then((data) => {
         console.log("Success:", data);
-        reFetchData();
+        refetch();
         navigate("/");
         onClose();
       })

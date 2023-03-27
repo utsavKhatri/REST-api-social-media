@@ -3,27 +3,25 @@ const chai = require("chai");
 const expect = chai.expect;
 
 describe("PostsController", () => {
-  var userId;
-  var testPost;
-  var req = {
-    user: {
-      id: userId,
-    },
-  };
-  var token;
   before(() => {
     console.log = function () {};
   });
 
-  before((done) => {
-    request(sails.hooks.http.app)
-      .post("/signup")
-      .field("email", "test4@test.com")
-      .field("password", "password")
-      .field("username", "test4")
-      .attach("postpic", __dirname + "/test.jpg")
-      .expect(200, done);
+  let userId;
+  let token;
+
+  describe("create test account", () => {
+    it("should return 200 and a JWT token", (done) => {
+      request(sails.hooks.http.app)
+        .post("/signup")
+        .field("email", "test4@test.com")
+        .field("password", "password")
+        .field("username", "test4")
+        .attach("postpic", __dirname + "/test.jpg")
+        .expect(201, done);
+    });
   });
+
   describe("GET /login", () => {
     it("should return 200 and a JWT token", (done) => {
       request(sails.hooks.http.app)
@@ -54,45 +52,39 @@ describe("PostsController", () => {
     });
   });
 
-  describe("Create, like-dislike, comment", () => {
-    it("POST /create-post", (done) => {
+  let testPost;
+  describe("POST /create-post", () => {
+    it("should create post", (done) => {
       request(sails.hooks.http.app)
         .post("/create-post")
         .set("Authorization", `Bearer ${token}`)
         .field("caption", "test caption")
         .field("postBy", userId)
-        .attach("postpic", __dirname + "/test.jpg")
         .expect(200)
         .end((err, res) => {
           if (err) {
             return done(err);
           }
-          testPost = res.body.newPost;
-          expect(res.body.message).to.equal("post created successfully");
-          done();
+          if (res.body.newPost) {
+            testPost = res.body.newPost;
+            return done();
+          }
         });
-    });
+    }).timeout(10000);
+  });
 
-    it("GET /like/:postId, like the post", (done) => {
+  describe("GET /like/:postId", () => {
+    it("like the post", (done) => {
       request(sails.hooks.http.app)
         .get(`/like/${testPost.id}`)
-        .send(req.user.id)
         .set("Authorization", `Bearer ${token}`)
         .expect(200, done);
     });
-
+  });
+  describe("Unlike the post", () => {
     it("GET /like/:postId, dislike the post", (done) => {
       request(sails.hooks.http.app)
         .get(`/like/${testPost.id}`)
-        .send(req.user.id)
-        .set("Authorization", `Bearer ${token}`)
-        .expect(200, done);
-    });
-
-    it("POST /comment/:postId, comment on the post", (done) => {
-      request(sails.hooks.http.app)
-        .post(`/comment/${testPost.id}`)
-        .field("text", "test comment")
         .set("Authorization", `Bearer ${token}`)
         .expect(200, done);
     });

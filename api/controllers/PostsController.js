@@ -102,7 +102,7 @@ module.exports = {
           postBy: req.user.id,
         }).fetch();
         console.log(newPost);
-        return res.json(newPost);
+        return res.json({message:"post created successfully without img",newPost});
       }
 
       let cld_upload_stream = cloudinary.uploader.upload_stream(
@@ -114,7 +114,7 @@ module.exports = {
             postBy: req.user.id,
           }).fetch();
           console.log(newPost);
-          return res.json(newPost);
+          return res.json({message:"post created successfully",newPost});
         }
       );
       streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);

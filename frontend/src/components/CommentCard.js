@@ -8,14 +8,13 @@ import {
   Box,
   Button,
   FormControl,
-  FormLabel,
   Input,
   Text,
 } from "@chakra-ui/react";
 import React, {  useState } from "react";
 import { Col, Row } from "react-bootstrap";
 
-const CommentCard = ({ post, reFetchData }) => {
+const CommentCard = ({ post, refetch }) => {
   const [commenttext, setCommenttext] = useState();
   const userData = JSON.parse(localStorage.getItem("user-profile"));
 
@@ -32,7 +31,7 @@ const CommentCard = ({ post, reFetchData }) => {
     })
       .then((response) => {
         if (response.status === 200) {
-          reFetchData();
+          refetch();
           setCommenttext("");
           return alert(response.data.message);
         } else {
