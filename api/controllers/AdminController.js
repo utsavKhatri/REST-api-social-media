@@ -38,49 +38,12 @@ module.exports = {
         });
       const totalItems = await User.count();
       const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-      const preData = userData.map(async (ud) => {
-        const comments = await Comment.find({ user: ud.id }).populateAll();
-        const posts = await Posts.find({ postBy: ud.id }).populateAll();
-        const likes = await Like.find({ user: ud.id }).populateAll();
-        const savedposts = await Savedpost.find({ user: ud.id }).populateAll();
-        const sharedposts = await PostShare.find({
-          sharedWith: ud.id,
-        }).populateAll();
-        ud.comments = comments.map((comment) => {
-          return {
-            ...comment,
-          };
-        });
-        ud.posts = posts.map((post) => {
-          return {
-            ...post,
-          };
-        });
-        ud.likes = likes.map((like) => {
-          return {
-            ...like,
-          };
-        });
-        ud.savedposts = savedposts.map((savedpost) => {
-          return {
-            ...savedpost,
-          };
-        });
-        ud.sharedposts = sharedposts.map((sharedpost) => {
-          return {
-            ...sharedpost,
-          };
-        });
-        return ud;
-      });
-      const finalData = await Promise.all(preData);
       return res.json({
         currentPage,
         itemsPerPage,
         totalPages,
         totalItems,
-        finalData,
+        userData,
       });
     } catch (error) {
       console.log(error.message);
