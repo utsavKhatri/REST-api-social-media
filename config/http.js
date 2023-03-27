@@ -50,9 +50,9 @@ module.exports.http = {
 
     bodyParser: (function () {
       const bodyParser = require("body-parser");
-      bodyParser.json();
-      bodyParser.urlencoded({ extended: true });
-      return bodyParser();
+      const jsonParser = bodyParser.json();
+      const urlencodedParser = bodyParser.urlencoded({ extended: true });
+      return [jsonParser, urlencodedParser];
     })(),
     fileMiddleware: (function () {
       const multer = require("multer");

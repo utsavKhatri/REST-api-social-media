@@ -8,49 +8,49 @@ import {
   Button,
   Badge,
 } from "@chakra-ui/react";
+import { gql } from "apollo-boost";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "react-apollo";
 import toast, { Toaster } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 
 export default function FollowCard() {
   const userData = localStorage.getItem("user-token");
   const currentUser = JSON.parse(localStorage.getItem("user-profile"));
-
-  const [singleUser, setSingleUser] = useState();
-  const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   let { id } = useParams();
 
-  const options = {
-    method: "POST",
-    url: "http://localhost:1337/graphql",
-    headers: {
-      Authorization: `Bearer ${userData}`,
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    data: {
-      query:
-        "query GetUser($id: ID!) {\n  getUser(id:$id){\n    id\n    username\n    email\n    profilePic\n isActive\n   posts{\n      id\n    }\n    following{\n      id\n      username\n      email\n      profilePic\n    }\n    followers{\n      id\n      username\n      email\n      profilePic\n    }\n  }\n}",
-      variables: { id: id },
-    },
-  };
+  const GET_SINGLE_USER = gql`
+    query GetUser($id: ID!) {
+      getUser(id: $id) {
+        id
+        username
+        email
+        profilePic
+        isActive
+        posts {
+          id
+        }
+        following {
+          id
+          username
+          email
+          profilePic
+        }
+        followers {
+          id
+          username
+          email
+          profilePic
+        }
+      }
+    }
+  `;
 
-  useEffect(() => {
-    setTimeout(() => {
-      axios
-        .request(options)
-        .then((response) => {
-          console.log(response.data.data.getUser);
-          setSingleUser(response.data.data.getUser);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }, 500);
-  }, [isFollowing]);
+  const { loading, error, data, refetch } = useQuery(GET_SINGLE_USER, {
+    variables: { id: id },
+  });
 
   const handleFollow = () => {
     const followOption = {
@@ -68,6 +68,7 @@ export default function FollowCard() {
         if (response.status === 200) {
           setIsFollowing(!isFollowing);
           toast.success("You are now following this user");
+          refetch();
         } else {
           toast.error("something went wrong");
         }
@@ -81,8 +82,8 @@ export default function FollowCard() {
     <>
       <Toaster />
       <Center py={6}>
-        {loading ? (
-          <Text>Loading...</Text>
+        {loading || error ? (
+          <Text>{error || "loading...."}</Text>
         ) : (
           <Box
             maxW={"320px"}
@@ -95,7 +96,7 @@ export default function FollowCard() {
           >
             <Avatar
               size={"xl"}
-              src={singleUser.profilePic}
+              src={data.getUser.profilePic}
               alt={"Avatar Alt"}
               mb={4}
               pos={"relative"}
@@ -103,7 +104,7 @@ export default function FollowCard() {
                 content: '""',
                 w: 4,
                 h: 4,
-                bg: singleUser.isActive ? "green.500" : "red.500",
+                bg: data.getUser.isActive ? "green.500" : "red.500",
                 border: "2px solid white",
                 rounded: "full",
                 pos: "absolute",
@@ -112,10 +113,10 @@ export default function FollowCard() {
               }}
             />
             <Heading fontSize={"2xl"} fontFamily={"body"}>
-              {singleUser.username}
+              {data.getUser.username}
             </Heading>
             <Text fontWeight={600} color={"gray.500"} mb={4}>
-              {singleUser.email}
+              {data.getUser.email}
             </Text>
             <Stack align={"center"} justify={"center"} direction={"row"} mt={6}>
               <Badge px={2} py={1} bg={{ color: "white" }} fontWeight={"400"}>
@@ -130,19 +131,19 @@ export default function FollowCard() {
             </Stack>
             <Stack direction={"row"} justify={"center"} spacing={6}>
               <Stack spacing={0} align={"center"}>
-                <Text fontWeight={600}> {singleUser.followers.length}</Text>
+                <Text fontWeight={600}> {data.getUser.followers.length}</Text>
                 <Text fontSize={"sm"} color={"gray.500"}>
                   Folloers
                 </Text>
               </Stack>
               <Stack spacing={0} align={"center"}>
-                <Text fontWeight={600}> {singleUser.following.length}</Text>
+                <Text fontWeight={600}> {data.getUser.following.length}</Text>
                 <Text fontSize={"sm"} color={"gray.500"}>
                   Following
                 </Text>
               </Stack>
               <Stack spacing={0} align={"center"}>
-                <Text fontWeight={600}> {singleUser.posts.length}</Text>
+                <Text fontWeight={600}> {data.getUser.posts.length}</Text>
                 <Text fontSize={"sm"} color={"gray.500"}>
                   Posts
                 </Text>
@@ -176,7 +177,9 @@ export default function FollowCard() {
                   bg: "blue.500",
                 }}
               >
-                {singleUser.followers.some((user) => user.id === currentUser.id)
+                {data.getUser.followers.some(
+                  (user) => user.id === currentUser.id
+                )
                   ? "unFollow"
                   : "Follow"}
               </Button>

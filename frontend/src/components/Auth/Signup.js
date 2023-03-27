@@ -10,7 +10,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-// import { MyContext } from "../../context";
 
 const Signup = () => {
   const navigate = useNavigate();

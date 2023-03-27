@@ -102,7 +102,7 @@ module.exports = {
           postBy: req.user.id,
         }).fetch();
         console.log(newPost);
-        return res.json(newPost);
+        return res.json({message:"post created successfully without img",newPost});
       }
 
       let cld_upload_stream = cloudinary.uploader.upload_stream(
@@ -114,7 +114,7 @@ module.exports = {
             postBy: req.user.id,
           }).fetch();
           console.log(newPost);
-          return res.json(newPost);
+          return res.json({message:"post created successfully",newPost});
         }
       );
       streamifier.createReadStream(req.file.buffer).pipe(cld_upload_stream);
@@ -311,6 +311,8 @@ module.exports = {
       if (isValidUser.postBy === req.user.id) {
         const deletedLike = await Like.destroy({ post: id });
         const deletedComment = await Comment.destroy({ post: id });
+        const savedPost = await Savedpost.destroy({ post: id });
+        const deletedPostShare = await PostShare.destroy({ post: id });
         const deletedPost = await Posts.destroy({ id: id });
         return res.json({ message: "Post deleted successfully." });
       }

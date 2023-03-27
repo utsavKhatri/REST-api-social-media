@@ -1,39 +1,45 @@
 import { Container, Heading, Stack } from "@chakra-ui/react";
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { gql } from "apollo-boost";
+// import axios from "axios";
+import React, { useEffect } from "react";
+import { useQuery } from "react-apollo";
 import { Col, Row } from "react-bootstrap";
 import NormalPostCard from "./NormalPostCard";
-// import NormalPostCard from "./NormalPostCard";
 
 const ReceivePost = () => {
-  const [postData, setPostData] = useState();
   const userData = JSON.parse(localStorage.getItem("user-profile"));
 
-  const options = {
-    method: "POST",
-    url: "http://localhost:1337/graphql",
-    headers: {
-      Authorization: `Bearer ${userData.token}`,
-    },
-    data: {
-      query:
-        "query GetReceivedPost($id:ID!){\n    getReceivedPost(id:$id){\n        post{\n            id\n            caption\n            image\n        }\n        shareBy{\n            id\n            username\n            profilePic\n        }\n        sharedWith{\n            id\n            username\n            profilePic\n        }\n    }\n}",
-      variables: { id: userData.id },
-    },
-  };
-  useEffect(() => {
-    axios
-      .request(options)
-      .then((response) => {
-        if (response.status === 200) {
-          setPostData(response.data.data.getReceivedPost);
-        } else {
-          alert("Something went wrong");
+  const GET_RECEIVE_POSTS = gql`
+    query GetReceivedPost($id: ID!) {
+      getReceivedPost(id: $id) {
+        post {
+          id
+          caption
+          image
         }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+        shareBy {
+          id
+          username
+          profilePic
+        }
+        sharedWith {
+          id
+          username
+          profilePic
+        }
+      }
+    }
+  `;
+
+  const { loading, error, data, refetch } = useQuery(GET_RECEIVE_POSTS, {
+    variables: { id: userData.id },
+  });
+
+
+  useEffect(() => {
+    refetch();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -42,17 +48,22 @@ const ReceivePost = () => {
         <Heading as="h2" size="xl">
           Received shared post
         </Heading>
-        <Row>
-          {postData ? (
-            postData.map((post, i) => (
-              <Col xs={12} md={5} key={i}>
-                <NormalPostCard post={post.post} />
-              </Col>
-            ))
-          ) : (
-            <h1>nothing here</h1>
-          )}
-        </Row>
+
+        {error || loading ? (
+          <h1>{error || "loading...."}</h1>
+        ) : (
+          <Row>
+            {data.getReceivedPost ? (
+              data.getReceivedPost.map((post, i) => (
+                <Col xs={12} md={5} key={i}>
+                  <NormalPostCard post={post.post} />
+                </Col>
+              ))
+            ) : (
+              <h1>nothing here</h1>
+            )}
+          </Row>
+        )}
       </Stack>
     </Container>
   );

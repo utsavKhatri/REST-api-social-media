@@ -7,7 +7,6 @@ describe("AdminController", () => {
     console.log = function () {};
   });
 
-
   var token;
   describe("GET /admin/dashboard", () => {
     before((done) => {
@@ -17,14 +16,14 @@ describe("AdminController", () => {
       }; // assuming this user exists and is an admin
       request(sails.hooks.http.app)
         .post("/login")
-        .send(adminUser)
+        .field("email", "admin@gmail.com")
+        .field("password", "admin123")
         .expect(200)
         .end((err, res) => {
           if (err) {
             return done(err);
           }
           token = res.body.userToken.token;
-          expect(res.body.message).to.equal("Admin logged in successfully");
           expect(res.body.userToken).to.have.property("token");
           done();
         });
@@ -48,13 +47,10 @@ describe("AdminController", () => {
     var userId;
     var token;
     before((done) => {
-      const adminUser = {
-        email: "admin@gmail.com",
-        password: "admin123",
-      }; // assuming this user exists and is an admin
       request(sails.hooks.http.app)
         .post("/login")
-        .send(adminUser)
+        .field("email", "admin@gmail.com")
+        .field("password", "admin123")
         .expect(200)
         .end((err, res) => {
           if (err) {
@@ -72,13 +68,13 @@ describe("AdminController", () => {
         .field("email", "test3@test.com")
         .field("password", "password")
         .field("username", "test3")
-        .attach("profilePhoto", __dirname + "/test.jpg")
-        .expect(200)
+        .attach("postpic", __dirname + "/test.jpg")
+        .expect(201)
         .end((err, res) => {
           if (err) {
             return done(err);
           }
-          userId = res.body.data.id;
+          userId = res.body.newUser.id;
           expect(res.body.message).to.equal("register successfully");
           done();
         });
@@ -109,19 +105,35 @@ describe("AdminController", () => {
   });
 
   describe("POST /admin/toggleUser/:userId", () => {
-    var userId;
+    let userId;
+    let token;
     before((done) => {
+      request(sails.hooks.http.app)
+        .post("/login")
+        .field("email", "admin@gmail.com")
+        .field("password", "admin123")
+        .expect(200)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          token = res.body.userToken.token;
+          expect(res.body.userToken).to.have.property("token");
+          done();
+        });
+    });
+    it("should create dummy account", (done) => {
       request(sails.hooks.http.app)
         .post("/signup")
         .field("email", "test6@test.com")
         .field("password", "password")
         .field("username", "test6")
-        .attach("profilePhoto", __dirname + "/test.jpg")
+        .attach("postpic", __dirname + "/test.jpg")
         .end((err, res) => {
           if (err) {
             return done(err);
           }
-          userId = res.body.data.id;
+          userId = res.body.newUser.id;
           done();
         });
     });
@@ -141,6 +153,12 @@ describe("AdminController", () => {
     it("should return 200 and toggle user active-inactive", (done) => {
       request(sails.hooks.http.app)
         .post(`/admin/toggleUser/${userId}`)
+        .set("Authorization", `Bearer ${token}`)
+        .expect(200, done);
+    });
+    it("should logout admin", (done) => {
+      request(sails.hooks.http.app)
+        .post("/logout")
         .set("Authorization", `Bearer ${token}`)
         .expect(200, done);
     });

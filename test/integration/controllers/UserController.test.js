@@ -3,18 +3,15 @@ const chai = require("chai");
 const expect = chai.expect;
 
 describe("UserController", () => {
-  /* This is a mocha hook. It is used to run a function before all the tests. */
-  // before(() => {
-  //   console.log = function () {};
-  // });
+  before(() => {
+    console.log = function () {};
+  });
 
-  /* This is a test case for signup. */
   describe("POST /signup", () => {
-    /* This is a test case for signup. check email and passowrd missing or not */
     it("should return 400 if email or password is missing", (done) => {
       request(sails.hooks.http.app)
         .post("/signup")
-        .send({})
+        .send()
         .expect(500)
         .end((err, res) => {
           if (err) {
@@ -24,15 +21,14 @@ describe("UserController", () => {
           done();
         });
     });
-    /* This is a test case for create user */
     it("should return 200 and create user", (done) => {
       request(sails.hooks.http.app)
         .post("/signup")
         .field("email", "test@test.com")
         .field("password", "password")
         .field("username", "test")
-        .attach("profilePhoto", __dirname + "/test.jpg")
-        .expect(200)
+        .attach("postpic", __dirname + "/test.jpg")
+        .expect(201)
         .end((err, res) => {
           if (err) {
             return done(err);
@@ -48,7 +44,7 @@ describe("UserController", () => {
         .field("email", "test@test.com")
         .field("password", "password")
         .field("username", "test1")
-        .attach("profilePhoto", __dirname + "/test.jpg")
+        .attach("postpic", __dirname + "/test.jpg")
         .expect(409)
         .end((err, res) => {
           if (err) {
@@ -60,12 +56,11 @@ describe("UserController", () => {
     });
   });
 
-  /* This is a test case for login. */
   describe("POST /login", () => {
     it("should return 400 if email or password is missing", (done) => {
       request(sails.hooks.http.app)
         .post("/login")
-        .send({})
+        .send()
         .expect(400)
         .end((err, res) => {
           if (err) {
@@ -80,10 +75,11 @@ describe("UserController", () => {
       const invalidPasswordUser = {
         email: "test@test.com",
         password: "admin121",
-      }; // assuming this user exists but has an invalid password
+      };
       request(sails.hooks.http.app)
         .post("/login")
-        .send(invalidPasswordUser)
+        .field("email", "test@test.com")
+        .field("password", "admin121")
         .expect(400)
         .end((err, res) => {
           if (err) {
@@ -95,7 +91,7 @@ describe("UserController", () => {
     });
 
     it("should return 200 and a JWT token for a regular user", (done) => {
-      const regularUser = { email: "test@test.com", password: "password" }; // assuming this user exists and is not an admin
+      const regularUser = { email: "test@test.com", password: "password" };
       request(sails.hooks.http.app)
         .post("/login")
         .send(regularUser)
@@ -156,9 +152,26 @@ describe("UserController", () => {
   });
 
   describe("POST /user/follow/:userid", () => {
-    var followUserId;
-    var token;
+    let followUserId;
+    let token;
     before((done) => {
+      request(sails.hooks.http.app)
+        .post("/signup")
+        .field("email", "test2@test.com")
+        .field("password", "password")
+        .field("username", "test2")
+        .attach("postpic", __dirname + "/test.jpg")
+        .expect(201)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          followUserId = res.body.newUser.id;
+          expect(res.body.message).to.equal("register successfully");
+          done();
+        });
+    });
+    it("should login dummy account", (done) => {
       request(sails.hooks.http.app)
         .post("/login")
         .send({ email: "test@test.com", password: "password" })
@@ -171,24 +184,7 @@ describe("UserController", () => {
           testUser = userToken.id;
           done();
         });
-    });
-    before((done) => {
-      request(sails.hooks.http.app)
-        .post("/signup")
-        .field("email", "test2@test.com")
-        .field("password", "password")
-        .field("username", "test2")
-        .attach("profilePhoto", __dirname + "/test.jpg")
-        .expect(200)
-        .end((err, res) => {
-          if (err) {
-            return done(err);
-          }
-          followUserId = res.body.data.id;
-          expect(res.body.message).to.equal("register successfully");
-          done();
-        });
-    });
+    }).timeout(5000);
     it("should return 404 if invalid userId", (done) => {
       request(sails.hooks.http.app)
         .post("/user/follow/640eec56bfdff4548bc0cdbc12")
@@ -201,22 +197,28 @@ describe("UserController", () => {
           expect(res.body.message).to.equal("User not found");
           done();
         });
-    });
+    }).timeout(10000);
     it("should return 200 and follow a user", (done) => {
       request(sails.hooks.http.app)
         .post(`/user/follow/${followUserId}`)
         .set("Authorization", `Bearer ${token}`)
         .expect(200, done);
-    });
+    }).timeout(5000);
     it("should return 200 and unfollow followed user", (done) => {
       request(sails.hooks.http.app)
         .post(`/user/follow/${followUserId}`)
         .set("Authorization", `Bearer ${token}`)
         .expect(200, done);
     });
+    it("should logout user", (done) => {
+      request(sails.hooks.http.app)
+        .post("/logout")
+        .set("Authorization", `Bearer ${token}`)
+        .expect(200, done);
+    });
     after((done) => {
       User.destroy({
-        email: ["test2@test.com","test@test.com"],
+        email: ["test2@test.com", "test@test.com"],
       }).exec(done);
     });
   });

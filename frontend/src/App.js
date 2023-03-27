@@ -21,7 +21,7 @@ function App() {
           <Route element={<ReceivePost />} path="/receive-post" exact/>
           <Route element={<FollowCard/>} path="/follow/:id" exact/>
         </Route>
-        <Route path="/login" element={<Login />} exact/>
+        <Route index path="/login" element={<Login />} exact/>
         <Route path="/signup" element={<Signup />} exact/>
         <Route path="/forgot-password" element={<ForgotPassword />} exact/>
       </Routes>

@@ -21,48 +21,102 @@ import {
   FormLabel,
   Input,
   Divider,
-  CardFooter,
   Card,
   CardBody,
   StackDivider,
   CardHeader,
+  useColorModeValue,
 } from "@chakra-ui/react";
-// import { BiChat, BiLike, BiShare } from "@chakra-ui/icons";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { MyContext } from "../context";
 import { CiShare1 } from "react-icons/ci";
 import { toast, Toaster } from "react-hot-toast";
 import NormalPostCard from "./NormalPostCard";
 import { InfinitySpin } from "react-loader-spinner";
+import { useQuery } from "react-apollo";
+import { gql } from "apollo-boost";
 
 const UserProfile = () => {
   const userData = JSON.parse(localStorage.getItem("user-profile"));
-  const [profile, setProfile] = useState({});
-  const [loading, setLoading] = useState(true);
   const [extras, setExtras] = useState(false);
-  const { reFetchData } = useContext(MyContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [file, setFile] = useState(null);
-  const [unfollowId, setUnfollowId] = useState();
 
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
 
-  const options = {
-    method: "POST",
-    url: "http://localhost:1337/graphql",
-    headers: {
-      Authorization: `Bearer ${userData.token}`,
-    },
-    data: {
-      query:
-        "query GetUser($id: ID!) {   getUser(id:$id){       id       username       email  bio  profilePic       posts{           id           caption           image       }       following{           id           username           profilePic           email       }       followers{           id           username           profilePic           email       }       comments{           id           text           post{               id               caption               image         }       }       likes{   id    post{  id   caption   image }     }      savedposts{ id  post{   id     caption     image } }   }\n}\n",
-      variables: { id: userData.id },
-    },
-  };
+  const GET_USER = gql`
+    query GetUser($id: ID!) {
+      getUser(id: $id) {
+        id
+        username
+        email
+        bio
+        profilePic
+        posts {
+          id
+          caption
+          image
+        }
+        following {
+          id
+          username
+          profilePic
+          email
+        }
+        followers {
+          id
+          username
+          profilePic
+          email
+        }
+        comments {
+          id
+          text
+          post {
+            id
+            caption
+            image
+          }
+        }
+        likes {
+          id
+          post {
+            id
+            caption
+            image
+          }
+        }
+        savedposts {
+          id
+          post {
+            id
+            caption
+            image
+          }
+        }
+      }
+    }
+  `;
+
+  const { loading, error, data, refetch } = useQuery(GET_USER, {
+    variables: { id: userData.id },
+  });
+
+  // const options = {
+  //   method: "POST",
+  //   url: "http://localhost:1337/graphql",
+  //   headers: {
+  //     Authorization: `Bearer ${userData.token}`,
+  //   },
+  //   data: {
+  //     query:
+  //       "query GetUser($id: ID!) {   getUser(id:$id){       id       username       email  bio  profilePic       posts{           id           caption           image       }       following{           id           username           profilePic           email       }       followers{           id           username           profilePic           email       }       comments{           id           text           post{               id               caption               image         }       }       likes{   id    post{  id   caption   image }     }      savedposts{ id  post{   id     caption     image } }   }\n}\n",
+  //     variables: { id: userData.id },
+  //   },
+  // };
 
   const navigate = useNavigate();
 
@@ -91,7 +145,7 @@ const UserProfile = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Success:", data);
-        fetchUserProfile();
+        refetch();
         navigate("/profile");
         onClose();
       })
@@ -99,18 +153,7 @@ const UserProfile = () => {
         console.error("Error:", error);
       });
   };
-  const fetchUserProfile = () => {
-    axios
-      .request(options)
-      .then((response) => {
-        console.log(response.data.data.getUser);
-        setProfile(response.data.data.getUser);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+
   const handleFollow = (id) => {
     const followOption = {
       method: "POST",
@@ -126,7 +169,7 @@ const UserProfile = () => {
         console.log(response.data);
         if (response.status === 200) {
           toast.success("You are now following this user");
-          fetchUserProfile();
+          refetch();
         } else {
           toast.error("something went wrong");
         }
@@ -137,19 +180,26 @@ const UserProfile = () => {
   };
 
   useEffect(() => {
-    fetchUserProfile();
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
       <Toaster />
       <Center py={6}>
-        {loading === false ? (
+        {error && (
+          <Box>
+            <Text>{error.message}</Text>
+          </Box>
+        )}
+        {!loading ? (
           <VStack direction={"row"}>
             <Box
               maxW={"270px"}
               w={"full"}
-              // bg={"white", "gray.800")}
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              bg={useColorModeValue("white.100", "gray.900")}
               boxShadow={"2xl"}
               rounded={"md"}
               overflow={"hidden"}
@@ -163,7 +213,7 @@ const UserProfile = () => {
               <Flex justify={"center"} mt={-12}>
                 <Avatar
                   size={"xl"}
-                  src={profile.profilePic}
+                  src={data.getUser.profilePic}
                   alt={"Author"}
                   css={{
                     border: "2px solid white",
@@ -178,36 +228,40 @@ const UserProfile = () => {
                     fontWeight={500}
                     fontFamily={"body"}
                   >
-                    {profile.username}
+                    {data.getUser.username}
                   </Heading>
-                  <Text color={"gray.500"}>{profile.email}</Text>
+                  <Text color={"gray.500"}>{data.getUser.email}</Text>
                   <Divider
                     style={{
                       marginBlock: "10px",
                     }}
                   />
-                  {profile.bio && (
+                  {data.getUser.bio && (
                     <Text color={"gray.500"} textAlign={"center"}>
-                      {profile.bio}
+                      {data.getUser.bio}
                     </Text>
                   )}
                 </Stack>
 
                 <Stack direction={"row"} justify={"center"} spacing={6}>
                   <Stack spacing={0} align={"center"}>
-                    <Text fontWeight={600}>{profile.following.length}</Text>
+                    <Text fontWeight={600}>
+                      {data.getUser.following.length}
+                    </Text>
                     <Text fontSize={"sm"} color={"gray.500"}>
                       Follwing
                     </Text>
                   </Stack>
                   <Stack spacing={0} align={"center"}>
-                    <Text fontWeight={600}>{profile.followers.length}</Text>
+                    <Text fontWeight={600}>
+                      {data.getUser.followers.length}
+                    </Text>
                     <Text fontSize={"sm"} color={"gray.500"}>
                       Followers
                     </Text>
                   </Stack>
                   <Stack spacing={0} align={"center"}>
-                    <Text fontWeight={600}>{profile.posts.length}</Text>
+                    <Text fontWeight={600}>{data.getUser.posts.length}</Text>
                     <Text fontSize={"sm"} color={"gray.500"}>
                       Posts
                     </Text>
@@ -313,18 +367,18 @@ const UserProfile = () => {
                         My Following
                       </Heading>
                       <Row>
-                        {profile.following.length > 0 ? (
-                          profile.following.map((user) => (
+                        {data.getUser.following.length > 0 ? (
+                          data.getUser.following.map((user) => (
                             <Col
                               xs={12}
                               md={4}
                               key={user.id}
-                              justifyContent={"center"}
+                              justify={"center"}
                             >
                               <Card maxW={"md"} m={3} key={user.id}>
                                 <Stack
                                   direction={"row"}
-                                  justifyContent={"space-between"}
+                                  justify={"space-between"}
                                   p={3}
                                   px={5}
                                   alignItems={"center"}
@@ -335,7 +389,7 @@ const UserProfile = () => {
                                   <Stack
                                     direction={"row"}
                                     alignItems={"center"}
-                                    justifyContent={"flex-start"}
+                                    justify={"flex-start"}
                                   >
                                     <Heading size={"md"}>
                                       {user.username}
@@ -362,18 +416,18 @@ const UserProfile = () => {
                         My Followers
                       </Heading>
                       <Row>
-                        {profile.followers.length > 0 ? (
-                          profile.followers.map((user) => (
+                        {data.getUser.followers.length > 0 ? (
+                          data.getUser.followers.map((user) => (
                             <Col
                               xs={12}
                               md={4}
                               key={user.id}
-                              justifyContent={"center"}
+                              justify={"center"}
                             >
                               <Card maxW={"md"} m={3} key={user.id}>
                                 <Stack
                                   direction={"row"}
-                                  justifyContent={"space-between"}
+                                  justify={"space-between"}
                                   p={3}
                                   px={5}
                                   alignItems={"center"}
@@ -384,7 +438,7 @@ const UserProfile = () => {
                                   <Stack
                                     direction={"row"}
                                     alignItems={"center"}
-                                    justifyContent={"flex-start"}
+                                    justify={"flex-start"}
                                   >
                                     <Heading size={"md"}>
                                       {user.username}
@@ -411,13 +465,13 @@ const UserProfile = () => {
                         My Posts
                       </Heading>
                       <Row>
-                        {profile.posts.length > 0 ? (
-                          profile.posts.map((post) => (
+                        {data.getUser.posts.length > 0 ? (
+                          data.getUser.posts.map((post) => (
                             <Col
                               xs={12}
                               md={4}
                               key={post.id}
-                              justifyContent={"center"}
+                              justify={"center"}
                             >
                               <NormalPostCard post={post} />
                             </Col>
@@ -433,13 +487,13 @@ const UserProfile = () => {
                         My Savedpost
                       </Heading>
                       <Row>
-                        {profile.savedposts.length > 0 ? (
-                          profile.savedposts.map((post) => (
+                        {data.getUser.savedposts.length > 0 ? (
+                          data.getUser.savedposts.map((post) => (
                             <Col
                               xs={12}
                               md={4}
                               key={post.post.id}
-                              justifyContent={"center"}
+                              justify={"center"}
                             >
                               <NormalPostCard post={post.post} />
                             </Col>
@@ -455,13 +509,13 @@ const UserProfile = () => {
                         My Comments
                       </Heading>
                       <Row>
-                        {profile.comments.length > 0 ? (
-                          profile.comments.map((comment) => (
+                        {data.getUser.comments.length > 0 ? (
+                          data.getUser.comments.map((comment) => (
                             <Col
                               xs={12}
                               md={4}
                               key={comment.id}
-                              justifyContent={"center"}
+                              justify={"center"}
                             >
                               <Card m={3} key={comment.id}>
                                 <CardHeader>
@@ -497,7 +551,7 @@ const UserProfile = () => {
             </Box>
           </VStack>
         ) : (
-          <Flex justifyContent={"center"} alignItems={"center"} w={"100%"}>
+          <Flex justify={"center"} alignItems={"center"} w={"100%"}>
             <InfinitySpin width="200" color="#bddff2" />
           </Flex>
         )}

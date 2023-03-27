@@ -6,13 +6,16 @@ import Navbar from "../components/Navbar";
 const PrivateRoutes = () => {
   const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
-  const userData = JSON.parse(localStorage.getItem("user-profile"));
-
   const checkUserToken = () => {
     const userToken = localStorage.getItem("user-token");
-    if (!userToken && !userData) {
+    const userData = JSON.parse(localStorage.getItem("user-profile"));
+
+    if (!userToken || !userData) {
       setIsLoggedIn({ token: false });
       navigate("/login");
+    }
+    else{
+      setIsLoggedIn({ token: true });
     }
   };
   // checkUserToken();
@@ -22,11 +25,13 @@ const PrivateRoutes = () => {
   });
 
   // eslint-disable-next-line eqeqeq
-  return (
+  return isLoggedIn.token == true ? (
     <>
       <Navbar />
       <Outlet />
     </>
+  ) : (
+    <h1>...Loading</h1>
   );
 };
 

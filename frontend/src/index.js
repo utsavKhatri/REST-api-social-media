@@ -5,16 +5,30 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { MyContextProvider } from "./context";
 import { ChakraProvider } from "@chakra-ui/react";
+import { ApolloProvider } from "react-apollo";
+import ApolloClient from "apollo-boost";
+
+const client = new ApolloClient({
+  uri: "http://localhost:1337/graphql",
+  request: (operation) => {
+    const token = localStorage.getItem("user-token");
+    operation.setContext({
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+  },
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
+  <ApolloProvider client={client}>
     <MyContextProvider>
       <ChakraProvider>
-        <App/>
+        <App />
       </ChakraProvider>
     </MyContextProvider>
-  </React.StrictMode>
+  </ApolloProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function
