@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 
 /**
  * This is a middleware function.
@@ -14,7 +13,7 @@ module.exports = async (req, res, next) => {
       return res.status(401).json("Unauthorized");
     }
     // Verify the token
-    jwt.verify(token, process.env.SECRET, async (err, decodedToken) => {
+    sails.config.custom.jwt.verify(token, process.env.SECRET, async (err, decodedToken) => {
       if (err) {
         return res.status(403).json("Forbidden");
       }

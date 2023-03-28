@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 module.exports = async function (req, res, next) {
   // Check for the presence of a JWT token in the authorization header
   const authHeader = req.headers.authorization;
@@ -9,7 +8,7 @@ module.exports = async function (req, res, next) {
   // Verify the JWT token and extract the user data
   try {
     const token = authHeader.split(" ")[1];
-    const decodedToken = await jwt.verify(token, process.env.SECRET);
+    const decodedToken = await sails.config.custom.jwt.verify(token, process.env.SECRET);
     req.user = decodedToken;
     return next();
   } catch (error) {

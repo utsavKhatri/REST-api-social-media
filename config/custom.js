@@ -10,6 +10,8 @@
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
 const fs = require("fs");
+const jwt = require("jsonwebtoken");
+
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -26,5 +28,6 @@ module.exports.custom = {
   // stripeSecret: 'sk_test_Zzd814nldl91104qor5911gjald',
   fs,
   bcrypt,
+  jwt,
   cloudinary,
 };

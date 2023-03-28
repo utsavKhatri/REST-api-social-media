@@ -6,17 +6,18 @@ import Navbar from "../components/Navbar";
 const PrivateRoutes = () => {
   const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn } = useContext(MyContext);
-  const checkUserToken = () => {
-    const userToken = localStorage.getItem("user-token");
-    const userData = JSON.parse(localStorage.getItem("user-profile"));
+  const checkUserToken = async () => {
+    const userData = await JSON.parse(localStorage.getItem("user-profile"));
 
-    if (!userToken || !userData) {
-      setIsLoggedIn({ token: false });
-      navigate("/login");
-    } else {
+    // eslint-disable-next-line eqeqeq
+    if (userData.email == "admin@gmail.com") {
       setIsLoggedIn({ token: true });
+    } else {
+      setIsLoggedIn({ token: false });
+      navigate("/admin/login");
     }
   };
+  // checkUserToken();
 
   useEffect(() => {
     checkUserToken();

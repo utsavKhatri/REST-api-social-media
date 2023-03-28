@@ -98,7 +98,7 @@ export default function Navbar() {
       <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <Box>
-            <Link to={"/"}>
+            <Link to="/">
               <Img
                 w={10}
                 src="https://img.icons8.com/fluency/48/null/gog-galaxy--v2.png"

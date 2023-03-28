@@ -10,8 +10,6 @@
  * https://sailsjs.com/config/bootstrap
  */
 const dotenv = require("dotenv");
-const jwt = require("jsonwebtoken");
-const multer = require("multer");
 dotenv.config();
 
 

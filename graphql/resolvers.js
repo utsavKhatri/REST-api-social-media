@@ -155,6 +155,7 @@ const resolvers = {
         or: [
           { username: { contains: search } },
           { email: { contains: search } },
+          { bio: { contains: search } },
         ],
       };
     }
