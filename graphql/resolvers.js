@@ -118,22 +118,22 @@ const resolvers = {
     const comments = await Comment.find({ post: post.id }).populateAll();
     const savedposts = await Savedpost.find({ post: post.id }).populateAll();
     const sharedposts = await PostShare.find({ post: post.id }).populateAll();
-    post.like = likes.map((like) => {
+    post.like = await likes.map((like) => {
       return {
         ...like,
       };
     });
-    post.comments = comments.map((comment) => {
+    post.comments = await comments.map((comment) => {
       return {
         ...comment,
       };
     });
-    post.save = savedposts.map((savedpost) => {
+    post.save = await savedposts.map((savedpost) => {
       return {
         ...savedpost,
       };
     });
-    post.sharedWith = sharedposts.map((sharedpost) => {
+    post.sharedWith = await sharedposts.map((sharedpost) => {
       return {
         ...sharedpost,
       };

@@ -124,57 +124,6 @@ module.exports = {
     }
   },
 
-  // createPost: async (req, res) => {
-  //   try {
-  //     const { caption } = req.body;
-  //     if (!caption) {
-  //       return res.status(500).json({ message: "enter something in caption" });
-  //     }
-  //     let postPic;
-  //     await req.file("postpic").upload(
-  //       {
-  //         dirname: require("path").resolve(sails.config.appPath, "assets"),
-  //         maxBytes: 10000000, // 10 MB
-  //       },
-  //       async (err, uploadedFiles) => {
-  //         if (err) {
-  //           return res.serverError(err);
-  //         }
-  //         if (uploadedFiles.length === 0) {
-  //           return res.badRequest("No file was uploaded");
-  //         }
-  //         console.log("------------------", uploadedFiles[0]);
-  //         postPic = uploadedFiles[0].fd;
-  //         const result = await sails.config.custom.cloudinary.uploader.upload(postPic, {
-  //           unique_filename: true,
-  //         });
-
-  //         // Delete image from local storage
-  //         sails.config.custom.fs.unlink(postPic, (err) => {
-  //           if (err) {
-  //             return console.log(err);
-  //           }
-  //           console.log("successfully deleted");
-  //         });
-  //         console.log(result.secure_url, caption);
-
-  //         const newPost = await Posts.create({
-  //           image: result.secure_url,
-  //           caption: caption,
-  //           postBy: req.user.id,
-  //         }).fetch();
-
-  //         return res.json({
-  //           newPost,
-  //           message: "post created successfully",
-  //         });
-  //       }
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //     return res.status(500).json({ message: error.message });
-  //   }
-  // },
   /**
    * Retrieves posts based on a search query and returns them as a JSON object.
    * @param {Object} req - Express request object.
@@ -341,14 +290,13 @@ module.exports = {
       if (!postToLike) {
         return res.status(404).json({ message: "Post not found" });
       }
-      // Add the user to the current user's following list
-      const likeId = await Like.find({ user: req.user.id });
+      // user is already liked
       const alreadyLike = await Like.findOne({
         user: req.user.id,
         post: postId,
       });
       if (alreadyLike) {
-        await Like.destroy({ id: likeId.id });
+        await Like.destroy({ id: alreadyLike.id });
         const updatedPost = await Posts.findOne({ id: postToLike.id }).populate(
           "like"
         );
