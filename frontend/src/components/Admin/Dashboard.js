@@ -9,18 +9,15 @@ import {
   Th,
   Thead,
   Tr,
-  Button,
   Container,
   FormControl,
   Input,
   Spinner,
-  Avatar,
   Center,
 } from "@chakra-ui/react";
 import gql from "graphql-tag";
 
 import { useQuery } from "react-apollo";
-import { Link, useNavigate } from "react-router-dom";
 import TableRow from "./TableRow";
 
 const Dashboard = () => {
@@ -33,6 +30,7 @@ const Dashboard = () => {
         email
         bio
         profilePic
+        isActive
         posts {
           id
         }
@@ -58,7 +56,6 @@ const Dashboard = () => {
   const { loading, error, data, refetch } = useQuery(GET_ALL_USER, {
     variables: { search: searchValue },
   });
-  const navigate = useNavigate();
 
   const handleSearch = async (v) => {
     await setSearchValue(v);
@@ -105,7 +102,7 @@ const Dashboard = () => {
                 <Tbody>
                   {data.getAllUsers.length > 1 ? (
                     data.getAllUsers.map((data, index) => (
-                      <TableRow data={data} refetch={refetch} index={index}/>
+                      <TableRow key={index+1} data={data} refetch={refetch} index={index}/>
                     ))
                   ) : (
                     <Tr>

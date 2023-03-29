@@ -1,10 +1,9 @@
 import { Avatar, Button, Center, Td, Tr } from "@chakra-ui/react";
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
-const TableRow = ({ data, index, refetch }) => {
-  const navigate = useNavigate();
+const TableRow = ({ data, index, refetch, key }) => {
   const handleStatus = async (id) => {
+    console.log("insise fubn",id);
     const response = await fetch(
       `http://localhost:1337/admin/toggleUser/${id}`,
       {
@@ -20,11 +19,8 @@ const TableRow = ({ data, index, refetch }) => {
     }
   };
 
-  const handlePosts = async (id) => {
-    navigate(`/post-by-user/${id}`);
-  };
   return (
-    <Tr key={index}>
+    <Tr key={key-1}>
       <Td isNumeric>{index + 1}</Td>
       <Td>
         <Center>
@@ -35,13 +31,7 @@ const TableRow = ({ data, index, refetch }) => {
       <Td>{data.email}</Td>
       <Td>{data.bio}</Td>
       <Td isNumeric>
-        {data.posts.length === 0 ? (
-          <Button size={"xs"}>0</Button>
-        ) : (
-          <Button onClick={() => handlePosts(data.id)}>
-            {data.posts.length}
-          </Button>
-        )}
+        <Button size={"xs"}>{data.posts.length}</Button>
       </Td>
       <Td isNumeric>{data.followers.length}</Td>
       <Td isNumeric>{data.following.length}</Td>
@@ -59,6 +49,7 @@ const TableRow = ({ data, index, refetch }) => {
           size={"sm"}
           onClick={() => handleStatus(data.id)}
         >
+          {console.log(data.isActive)}
           {data.isActive ? "Active" : "inActive"}
         </Button>
       </Td>

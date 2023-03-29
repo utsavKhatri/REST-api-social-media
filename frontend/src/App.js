@@ -13,7 +13,6 @@ import ReceivePost from "./components/ReceivePost";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import Dashboard from "./components/Admin/Dashboard";
 import AdminLogin from "./components/Admin/Auth/AdminLogin";
-import UserPosts from "./components/Admin/UserPosts";
 
 function App() {
   return (
@@ -27,7 +26,6 @@ function App() {
         </Route>
         <Route element={<AdminRoutes />}>
           <Route element={<Dashboard />} path="/admin" exact />
-          <Route element={<UserPosts />} path="/post-by-user/:id" exact />
         </Route>
         <Route index path="/login" element={<Login />} exact />
         <Route path="/admin/login" element={<AdminLogin />} exact />
