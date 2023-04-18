@@ -254,7 +254,7 @@ const LatestPostcard = ({ post }) => {
       >
         {/* Post Author */}
         <Flex p={4} alignItems={"center"} justifyContent={"space-between"}>
-          <Flex>
+          <Flex alignItems={"center"}>
             <Link
               to={
                 post.postBy.id !== userData.id
@@ -264,22 +264,23 @@ const LatestPostcard = ({ post }) => {
             >
               <Avatar size="sm" src={post.postBy.profilePic} mr={4} />
             </Link>
-            <Link
-              to={
-                post.postBy.id !== userData.id
-                  ? `/follow/${post.postBy.id}`
-                  : "/profile"
-              }
-            >
-              <Flex>
+
+            <Flex flexDirection={"column"}>
+              <Link
+                to={
+                  post.postBy.id !== userData.id
+                    ? `/follow/${post.postBy.id}`
+                    : "/profile"
+                }
+              >
                 <Text fontWeight="bold" my={"auto"}>
                   {post.postBy.username}
                 </Text>
-                <Hide below="md">
-                  <Text my={"auto"}>{post.postBy.bio && post.postBy.bio}</Text>
-                </Hide>
-              </Flex>
-            </Link>
+              </Link>
+              <Hide below="md">
+                <Text my={"auto"}>{post.postBy.bio && post.postBy.bio}</Text>
+              </Hide>
+            </Flex>
           </Flex>
           <Popover placement="bottom" isLazy>
             <PopoverTrigger>

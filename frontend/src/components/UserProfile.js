@@ -132,9 +132,11 @@ const UserProfile = () => {
 
     if (file === null) {
       formData.append("username", name);
-    } else {
-      formData.append("postpic", file);
       formData.append("bio", bio);
+    } else {
+      formData.append("username", name);
+      formData.append("bio", bio);
+      formData.append("postpic", file);
     }
 
     fetch("http://localhost:1337/profile", {
@@ -177,6 +179,11 @@ const UserProfile = () => {
       .catch((error) => {
         console.error(error);
       });
+  };
+  const handleOpenUpdate = () => {
+    setBio(data.getUser.bio);
+    setName(data.getUser.username);
+    onOpen();
   };
 
   useEffect(() => {
@@ -288,7 +295,7 @@ const UserProfile = () => {
                   bg={"green.400"}
                   color={"white"}
                   rounded={"md"}
-                  onClick={onOpen}
+                  onClick={handleOpenUpdate}
                   _hover={{
                     transform: "translateY(-2px)",
                     boxShadow: "lg",
@@ -315,16 +322,19 @@ const UserProfile = () => {
                               focusBorderColor="green.400"
                               placeholder="Enter new username"
                               onChange={(e) => setName(e.target.value)}
+                              defaultValue={data.getUser.username}
                             />
                           </FormControl>
                           <FormControl>
                             <FormLabel htmlFor="bio">Bio</FormLabel>
                             <Input
+                              required
                               id="bio"
                               name="bio"
                               type="text"
                               variant="outline"
                               focusBorderColor="green.400"
+                              defaultValue={data.getUser.bio}
                               placeholder="write something about your self"
                               onChange={(e) => setBio(e.target.value)}
                             />
