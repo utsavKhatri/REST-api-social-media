@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { MyContext } from "../context";
 
 import PostCard from "./PostCard";
+import LatestPostcard from "./LatestPostcard";
 
 const Home = () => {
   const { refetch, data, loading, error } = useContext(MyContext);
@@ -37,9 +38,12 @@ const Home = () => {
     <React.Fragment>
       <Container className="py-5">
         <VStack>
+          {/* <LatestPostcard/> */}
+                        {/* <PostCard key={post.id} post={post} /> */}
+
           {data.getAllPosts.map((post) => (
             <Box md={4} key={post.id + 2}>
-              <PostCard key={post.id} post={post} />
+              <LatestPostcard key={post.id} post={post}/>
             </Box>
           ))}
         </VStack>

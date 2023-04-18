@@ -7,12 +7,14 @@ import {
   Avatar,
   Box,
   Button,
+  Flex,
   FormControl,
   Input,
+  Stack,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react";
-import React, {  useState } from "react";
-import { Col, Row } from "react-bootstrap";
+import React, { useState } from "react";
 
 const CommentCard = ({ post, refetch }) => {
   const [commenttext, setCommenttext] = useState();
@@ -44,24 +46,35 @@ const CommentCard = ({ post, refetch }) => {
   };
   return (
     <Accordion allowToggle>
-      <AccordionItem>
-        <h2>
-          <AccordionButton sx={{
-            outline: "none",
-            borderBlock: "none",
-            _hover: {
-              bg: "blue.50",
-            }
-          }}>
+      <AccordionItem backgroundColor={useColorModeValue("white", "gray.800")}>
+        
+          <AccordionButton
+            sx={{
+              outline: "none",
+              borderBlock: "none",
+              _hover: {
+                bg: "gray.300",
+                color: "black",
+              },
+              _dark: {
+                _hover: {
+                  bg: "gray.900",
+                  color: "white",
+                },
+              },
+            }}
+          >
             <Box as="span" flex="1" textAlign="left">
               {post.comments.length} Comments...
             </Box>
             <AccordionIcon />
           </AccordionButton>
-        </h2>
+        
 
-        <AccordionPanel>
-          <form>
+        <AccordionPanel
+          backgroundColor={useColorModeValue("gray.50", "gray.800")}
+        >
+          <form backgroundColor={useColorModeValue("gray.50", "gray.800")}>
             <FormControl id="email" className="d-flex gap-2">
               <Input
                 type="text"
@@ -83,19 +96,20 @@ const CommentCard = ({ post, refetch }) => {
           </form>
           {post.comments.length > 0 &&
             post.comments.map((comment) => (
-              <Box key={comment.id} p={2}>
-                <Row>
-                  <Text>{comment.text}</Text>
-                </Row>
-                <Row className="text-muted bg-light text-right py-2">
-                  <Col xs={3}>
-                    <Avatar size={"xs"} src={comment.user.profilePic} />
-                  </Col>
-                  <Col>
-                    <Text>{comment.user.username}</Text>
-                  </Col>
-                </Row>
-              </Box>
+              <Flex key={comment.id} p={2} alignItems="center">
+                <Avatar
+                  size="sm"
+                  src={comment.user.profilePic}
+                  mr={3}
+                  my={"auto"}
+                />
+                <Box flex="1">
+                  <Text fontWeight="bold" fontSize="sm" mb={1}>
+                    {comment.user.username}
+                  </Text>
+                  <Text fontSize="sm">{comment.text}</Text>
+                </Box>
+              </Flex>
             ))}
         </AccordionPanel>
       </AccordionItem>

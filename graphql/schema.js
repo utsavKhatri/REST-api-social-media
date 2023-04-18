@@ -11,6 +11,7 @@ type Posts {
   save: [Savedpost]
   sharedWith: [PostShare]
   shares: [PostShare]
+  createdAt: String!
 }
 
 type Like {

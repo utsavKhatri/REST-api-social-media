@@ -18,6 +18,7 @@ export function MyContextProvider({ children }) {
         id
         caption
         image
+        createdAt
         like {
           id
           user {
