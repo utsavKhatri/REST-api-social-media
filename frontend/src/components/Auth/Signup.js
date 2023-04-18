@@ -17,6 +17,7 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPass] = useState("");
+  const [isloading, setIsloading] = useState(false);
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
@@ -25,6 +26,7 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsloading(true);
     const formData = new FormData();
     formData.append("username", name);
     formData.append("email", email);
@@ -37,7 +39,7 @@ const Signup = () => {
     })
       .then((response) => {
         if (response.status === 201) {
-          alert("successfully created account");
+          setIsloading(false);
           navigate("/login");
           response.json();
         } else {
@@ -107,7 +109,7 @@ const Signup = () => {
                   onChange={handleFileChange}
                 />
               </FormControl>
-              <Button type="submit" bgColor={"#68D391"} width="full">
+              <Button type="submit" isLoading={isloading} bgColor={"#68D391"} width="full">
                 Signup
               </Button>
             </VStack>
