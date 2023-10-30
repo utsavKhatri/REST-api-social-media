@@ -64,7 +64,7 @@ export default function FollowCard() {
     axios
       .request(followOption)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         if (response.status === 200) {
           setIsFollowing(!isFollowing);
           toast.success("You are now following this user");

@@ -21,7 +21,7 @@ module.exports = async (req, res, next) => {
       // Add the decoded token to the request object
       req.user = decodedToken;
       // Call the next middleware or route handler
-      console.log(decodedToken);
+      // console.log(decodedToken);
       const user = await User.findOne({ id: decodedToken.id });
       if (!user || !user.token) {
         return res.status(401).json("Token expired");

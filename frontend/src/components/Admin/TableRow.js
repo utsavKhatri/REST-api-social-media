@@ -3,7 +3,7 @@ import React from "react";
 
 const TableRow = ({ data, index, refetch, key }) => {
   const handleStatus = async (id) => {
-    console.log("insise fubn",id);
+    // console.log("insise fubn",id);
     const response = await fetch(
       `http://localhost:1337/admin/toggleUser/${id}`,
       {
@@ -20,7 +20,7 @@ const TableRow = ({ data, index, refetch, key }) => {
   };
 
   return (
-    <Tr key={key-1}>
+    <Tr key={key}>
       <Td isNumeric>{index + 1}</Td>
       <Td>
         <Center>
@@ -49,7 +49,7 @@ const TableRow = ({ data, index, refetch, key }) => {
           size={"sm"}
           onClick={() => handleStatus(data.id)}
         >
-          {console.log(data.isActive)}
+          {/* {console.log(data.isActive)} */}
           {data.isActive ? "Active" : "inActive"}
         </Button>
       </Td>

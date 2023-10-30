@@ -63,7 +63,7 @@ const PostCard = ({ post }) => {
       .request(options)
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
+          // console.log(response.data);
 
           alert(response.data.message);
           navigate("/");
@@ -88,7 +88,7 @@ const PostCard = ({ post }) => {
       .request(options)
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
+          // console.log(response.data);
           refetch();
         } else {
           toast.error("something went wrong");
@@ -111,7 +111,7 @@ const PostCard = ({ post }) => {
       .request(options)
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
+          // console.log(response.data);
           refetch();
         } else {
           toast.error("something went wrong");
@@ -137,7 +137,7 @@ const PostCard = ({ post }) => {
     axios
       .request(optionsFetcjUser)
       .then((response) => {
-        console.log(response.data.data.getAllUsers);
+        // console.log(response.data.data.getAllUsers);
         setUserList(response.data.data.getAllUsers);
       })
       .catch(function (error) {
@@ -160,7 +160,7 @@ const PostCard = ({ post }) => {
       .request(options)
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
+          // console.log(response.data);
           onClose();
           navigate("/");
           refetch();
@@ -180,7 +180,7 @@ const PostCard = ({ post }) => {
     })
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
-        console.log(url);
+        // console.log(url);
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", "download-img.png"); // Set a default filename for the downloaded file

@@ -146,7 +146,7 @@ const UserProfile = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Success:", data);
+        // console.log("Success:", data);
         refetch();
         navigate("/profile");
         onClose();
@@ -168,7 +168,7 @@ const UserProfile = () => {
     axios
       .request(followOption)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         if (response.status === 200) {
           toast.success("You are now following this user");
           refetch();

@@ -48,7 +48,7 @@ module.exports = {
       }
       const token = await sails.helpers.jwt(user.id);
       const userToken = await User.updateOne({ id: user.id }).set({ token });
-      console.log(user);
+      // console.log(user);
 
       return res.json({ message: "successfully logged in", userToken });
     } catch (error) {
@@ -66,9 +66,9 @@ module.exports = {
 
   signup: async (req, res) => {
     try {
-      console.log(req.body);
+      // console.log(req.body);
       var postpic = req.file;
-      console.log("---------> ", postpic);
+      // console.log("---------> ", postpic);
       const { username, email, password } = req.body;
       if (!username || !email || !password) {
         return res.status(500).json({ message: "enter something in input" });
@@ -90,7 +90,7 @@ module.exports = {
           email,
           password: hashedPassword,
         }).fetch();
-        console.log(newUser);
+        // console.log(newUser);
         return res
           .status(201)
           .json({ message: "user created successfully", newUser });
@@ -98,7 +98,7 @@ module.exports = {
 
       let cld_upload_stream = await cloudinary.uploader.upload_stream(
         async (error, result) => {
-          console.log(error, result);
+          // console.log(error, result);
           const existingUser = await User.findOne({ email });
           if (existingUser) {
             return res.status(409).json({ message: "User already exists" });
@@ -115,7 +115,7 @@ module.exports = {
             password: hashedPassword,
             profilePic: result.secure_url,
           }).fetch();
-          console.log(newUser);
+          // console.log(newUser);
           return res
             .status(201)
             .json({ message: "register successfully", newUser });
@@ -141,7 +141,7 @@ module.exports = {
 
     try {
       const userData = await User.findOne({ id: id }).populate("posts");
-      console.log(userData);
+      // console.log(userData);
       return res.json(userData);
     } catch (error) {
       console.log(error.message);
@@ -362,7 +362,7 @@ module.exports = {
       let profilePic;
       const id = req.user.id;
       const postpic = req.file;
-      console.log("---------> ", postpic);
+      // console.log("---------> ", postpic);
 
       if (!req.body) {
         return res
@@ -372,7 +372,7 @@ module.exports = {
 
       if (!postpic) {
         const { username, bio } = req.body;
-        console.log(username, bio);
+        // console.log(username, bio);
 
         // updat user profile
         const updatedProfile = await User.updateOne({ id: id })
@@ -390,9 +390,9 @@ module.exports = {
 
       let cld_upload_stream = cloudinary.uploader.upload_stream(
         async (error, result) => {
-          console.log(error, result);
+          // console.log(error, result);
           const { username, bio } = req.body;
-          console.log(username, bio, result.secure_url);
+          // console.log(username, bio, result.secure_url);
 
           // updat user profile
           const updatedProfile = await User.updateOne({ id: id })
@@ -482,7 +482,7 @@ module.exports = {
    */
   logout: async (req, res) => {
     const id = req.user.id;
-    console.log("id ", id);
+    // console.log("id ", id);
     try {
       await User.updateOne({ id: id }).set({ token: "" });
       return res.status(200).json({ message: "successfully logged out" });

@@ -64,7 +64,7 @@ const LatestPostcard = ({ post }) => {
       .request(options)
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
+          // console.log(response.data);
 
           alert(response.data.message);
           navigate("/");
@@ -89,7 +89,7 @@ const LatestPostcard = ({ post }) => {
       .request(options)
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
+          // console.log(response.data);
           refetch();
         } else {
           toast.error("something went wrong");
@@ -112,7 +112,7 @@ const LatestPostcard = ({ post }) => {
       .request(options)
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
+          // console.log(response.data);
           refetch();
         } else {
           toast.error("something went wrong");
@@ -138,7 +138,7 @@ const LatestPostcard = ({ post }) => {
     axios
       .request(optionsFetcjUser)
       .then((response) => {
-        console.log(response.data.data.getAllUsers);
+        // console.log(response.data.data.getAllUsers);
         setUserList(response.data.data.getAllUsers);
       })
       .catch(function (error) {
@@ -161,7 +161,7 @@ const LatestPostcard = ({ post }) => {
       .request(options)
       .then((response) => {
         if (response.status === 200) {
-          console.log(response.data);
+          // console.log(response.data);
           onClose();
           navigate("/");
           refetch();
@@ -181,7 +181,7 @@ const LatestPostcard = ({ post }) => {
     })
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
-        console.log(url);
+        // console.log(url);
         const link = document.createElement("a");
         link.href = url;
         link.setAttribute("download", "download-img.png"); // Set a default filename for the downloaded file
@@ -211,7 +211,7 @@ const LatestPostcard = ({ post }) => {
           setCommenttext("");
           return alert(response.data.message);
         } else {
-          console.log(response.data);
+          // console.log(response.data);
         }
       })
       .catch((error) => {

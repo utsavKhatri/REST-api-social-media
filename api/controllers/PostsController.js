@@ -91,7 +91,7 @@ module.exports = {
   createPost: async (req, res) => {
     const { caption } = req.body;
     const postpic = req.file;
-    console.log("---------> ", postpic);
+    // console.log("---------> ", postpic);
     try {
       if (!caption) {
         return res.status(400).json({ message: "Caption is required" });
@@ -101,19 +101,19 @@ module.exports = {
           caption,
           postBy: req.user.id,
         }).fetch();
-        console.log(newPost);
+        // console.log(newPost);
         return res.json({message:"post created successfully without img",newPost});
       }
 
       let cld_upload_stream = cloudinary.uploader.upload_stream(
         async (error, result) => {
-          console.log(error, result);
+          // console.log(error, result);
           const newPost = await Posts.create({
             caption,
             image: result.secure_url,
             postBy: req.user.id,
           }).fetch();
-          console.log(newPost);
+          // console.log(newPost);
           return res.json({message:"post created successfully",newPost});
         }
       );
@@ -185,7 +185,7 @@ module.exports = {
         const updatedPost = await Posts.findOne({ id: postToSave.id }).populate(
           "save"
         );
-        console.log("updatedPost--->", updatedPost);
+        // console.log("updatedPost--->", updatedPost);
         return res.json(updatedPost);
       }
       const savePost = await Savedpost.create({
@@ -219,7 +219,7 @@ module.exports = {
         return res.status(404).json({ message: "Post not found" });
       }
       const sharedWith = req.query.sharedWith;
-      console.log("sharedWith--->", sharedWith);
+      // console.log("sharedWith--->", sharedWith);
       if (sharedWith === req.user.id) {
         return res
           .status(400)
@@ -231,7 +231,7 @@ module.exports = {
         );
       }
       const users = await User.find();
-      console.log("users--->", users);
+      // console.log("users--->", users);
       const postShare = await PostShare.create({
         post: postId,
         sharedWith: sharedWith,
@@ -300,7 +300,7 @@ module.exports = {
         const updatedPost = await Posts.findOne({ id: postToLike.id }).populate(
           "like"
         );
-        console.log("updatedPost--->", updatedPost);
+        // console.log("updatedPost--->", updatedPost);
         return res.json(updatedPost);
       }
       const likePost = await Like.create({
@@ -335,7 +335,7 @@ module.exports = {
       const userId = req.user.id;
       const { text } = req.body;
 
-      console.log("post id is here---->", { postId, text });
+      // console.log("post id is here---->", { postId, text });
 
       // Ensure that the post exists
       const post = await Posts.findOne({ id: postId });

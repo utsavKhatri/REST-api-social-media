@@ -63,9 +63,10 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    console.log("data", data);
     refetch();
+    console.log("new log new");
   });
-
   return (
     <Box>
       <FormControl p={3}>
@@ -101,9 +102,20 @@ const Dashboard = () => {
                 </Thead>
                 <Tbody>
                   {data.getAllUsers.length > 1 ? (
-                    data.getAllUsers.map((data, index) => (
-                      <TableRow key={index+1} data={data} refetch={refetch} index={index}/>
-                    ))
+                    data.getAllUsers
+                      .filter(
+                        (data) =>
+                          data.id !==
+                          JSON.parse(localStorage.getItem("user-profile")).id
+                      )
+                      .map((data, index) => (
+                        <TableRow
+                          key={index + 1}
+                          data={data}
+                          refetch={refetch}
+                          index={index}
+                        />
+                      ))
                   ) : (
                     <Tr>
                       <Td colSpan={7} textAlign={"center"}>

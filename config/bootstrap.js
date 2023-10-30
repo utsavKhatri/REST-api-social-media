@@ -12,7 +12,15 @@
 const dotenv = require("dotenv");
 dotenv.config();
 
-
 module.exports.bootstrap = async function () {
-
+  const adminData = {
+    email: "admin@gmail.com",
+    password: await sails.config.custom.bcrypt.hash("123456", 10),
+    username: "admin",
+    isAdmin: true,
+  };
+  const adminExist = await User.findOne({ email: adminData.email });
+  if (!adminExist) {
+    await User.create(adminData);
+  }
 };
